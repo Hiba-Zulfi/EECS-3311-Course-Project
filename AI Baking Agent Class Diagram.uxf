@@ -1,0 +1,700 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>7</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>777</x>
+      <y>518</y>
+      <w>203</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>UserPreferences
+--
+- dietaryRestrictions: List&lt;String&gt;
+- tastePreferences: List&lt;String&gt;
+- preferredServingSize: int
+--
++ addPreference(Stirng preference): void
++ removePreference(String preference): void
++ getPreference(): List&lt;String&gt; 
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>21</x>
+      <y>1092</y>
+      <w>245</w>
+      <h>182</h>
+    </coordinates>
+    <panel_attributes>Recipe
+--
+- recipeID: int
+- name: String
+- description: String
+- servings: int
+- prepTime: int
+- bakeTime: int
+- ingredients: List&lt;Ingredient&gt;
+- instructions: List&lt;String&gt;
+--
++ getIngredients(): List&lt;Ingredient&gt;
++ getServings(): int
++ getTotalTime(): int
++ updateIngredients(List&lt;Ingredient&gt; ingredients): void
++ addIngredient(Ingredient ingredient): void
++ scaleRecipe(Recipe r, int quantity): Recipe
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>525</x>
+      <y>1288</y>
+      <w>182</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>Ingredient
+--
+- name: String
+- quantity: double
+- unit: String
+--
++ getName(): String
++ getQuantity(): double
++ getUnit(): String
++ updateQuantity(double multiplier): void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>161</x>
+      <y>1344</y>
+      <w>182</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>FavouritesManager
+--
+- favourites: List&lt;Recipe&gt;
+--
++ addFavourite(Recipe recipe): void
++ removeFavourite(Recipe recipe): void
++ getFavourites(): List&lt;Recipe&gt; </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>994</x>
+      <y>1092</y>
+      <w>203</w>
+      <h>161</h>
+    </coordinates>
+    <panel_attributes>BakingRequest
+--
+- requestText: String
+- desiredServings: int
+- availableTime: int
+- availableIngredients: List&lt;Ingredient&gt;
+- dietaryRestrictions: List&lt;String&gt;
+- tastePreference: String
+--
++ getRequestText(): String 
++ getDesiredServings(): int
++ getAvailableTime(): int
++ getAvailableIngredients(): List&lt;Ingredient&gt;
++ getDietaryRestrictions(): String
++ getTastePreference(): String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>273</x>
+      <y>1092</y>
+      <w>294</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>ShoppingList
+--
+- items: List&lt;Ingredient&gt;
+--
++ addItem(Ingredient item): void
++ removeItem(Ingredient item): void
++ getItems(): List&lt;Ingredient&gt;
++ generate(Recipe r, List&lt;Ingredient&gt; a): ShoppingList
++ findMissingItems(Recipe r, List&lt;Ingredient&gt; a): List&lt;Ingredient&gt;
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>399</x>
+      <y>0</y>
+      <w>182</w>
+      <h>105</h>
+    </coordinates>
+    <panel_attributes>BakingGUI
+--
+- controller: AgentController
+--
++ displayMenu(): void
++ getUserInput(): String
++ submitRequest(BakingRequest r): void
++ displayRecipe(Recipe r): void
++ displayResult(String s): void
++ displayError(String s): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>434</x>
+      <y>154</y>
+      <w>315</w>
+      <h>140</h>
+    </coordinates>
+    <panel_attributes>AgentController
+--
+- agent: BakingAgent
+- ingredientManager: IngredientManager
+- recipeManager: RecipeManager
+- favouritesManager: FavouriteManager
+- shoppingListGenerator: ShoppingListGenerator
+--
++ processRequest(BakingRequest r): String
++ checkIngredients(Recipe r, List&lt;Ingredient&gt; a): List&lt;Ingredient&gt;
++ scaleRecipe(Recipe r, int scale): Recipe
++ addFavourite(Recipe r): void
++ generateShoppingList(Recipe r, a List&lt;Ingredient&gt; a): ShoppingList</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>602</x>
+      <y>0</y>
+      <w>154</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>BakingCLI
+--
+- controller: AgentController
+--
++ start(): void
++ getUserInput(): String
++ submitCommand(String s): void
++ displayResult(String s): void
++ displayError(String s): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>511</x>
+      <y>343</y>
+      <w>196</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>BakingAgent
+--
+- llmClient: LLMClient
+- toolManager: ToolManager
+- memory: AgentMemory
+--
++ processRequest(BakingRequest r): String
++ analyzeIntent(String s): String
++ selectTool(String s): AgentTool
++ executeTool(AgentTool t, String s): String
++ generateResponse(String s): String
++ requestClarification(): String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>518</x>
+      <y>518</y>
+      <w>182</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>ToolManager
+--
+- tools: List&lt;AgentTool&gt;
+--
++ registerTool(AgentTool t): void
++ getTool(String s): AgentTool
++ getAvailableTools(): List&lt;AgentTool&gt;
++ executeTool(String s, String i): String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>553</x>
+      <y>665</y>
+      <w>126</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;interface&gt;&gt;
+AgentTool
+--
+
+--
++ execute(String s): String
++ getName(): String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>609</x>
+      <y>875</y>
+      <w>245</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>SubstitutionTool
+--
+- llmClient: LLMClient
+--
++ execute(String s): String
++ suggestSubstitute(Ingredient i, Recipe r): String
++ explainEffect(String s): String</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>77</x>
+      <y>875</y>
+      <w>245</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>RecipeSearchTool
+--
+- repository: RecipeRepository
+- llmClient: LLMClient
+--
++ execute(String s): String
++ searchRecipes(String s): List&lt;Recipe&gt;
++ interpretRequest(String s): String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>329</x>
+      <y>875</y>
+      <w>273</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>TimeRecommendationTool
+--
+- repository: RecipeRepository
+- llmClient: LLMClient
+--
++ execute(String s): String
++ filterByTime(List&lt;Recipe&gt; recipeList, int time): List&lt;Recipe&gt;
++ rankRecipes(List&lt;Recipe&gt; recipeList): List&lt;Recipe&gt;
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>966</x>
+      <y>791</y>
+      <w>245</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>BakingRequestTool
+--
+- llmClient: LLMClient
+--
++ execute(String s): String
++ analyzeRequest(BakingRequest r): String
++ identifyRequirements(BakingRequest r): List&lt;String&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>861</x>
+      <y>875</y>
+      <w>245</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>TasteCustomizationTool
+--
+- llmClient: LLMClient
+--
++ execute(String s): String
++ customizeRecipe(Recipe r, String p): Recipe
++ explainChanges(Recipe r) String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>777</y>
+      <w>189</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>TroubleshootingTool
+--
+- llmClient: LLMClient
+--
++ execute(String s): String 
++ analyzeProblem(String s): String
++ suggestSolutions(String s): List&lt;String&gt;
++ requestAdditionalInformation(): String
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>574</x>
+      <y>1092</y>
+      <w>413</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>IngredientManager
+--
+- availableIngredients: List&lt;Ingredient&gt;
+--
++ checkAvailability(Recipe r): List&lt;Ingredient&gt; 
++ findMissingIngredients(Recipe r): List&lt;Ingredient&gt;
++ compareIngredients(List&lt;Ingredient&gt; required, List&lt;Ingredient&gt; available): List&lt;Ingredient&gt;
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>210</x>
+      <y>518</y>
+      <w>224</w>
+      <h>77</h>
+    </coordinates>
+    <panel_attributes>LLMClient
+--
+- modelName: String
+--
++ generateResponse(String prompt): String
++ analyzeRequest(String prompt): String
++ rankOptions(List&lt;String&gt; options): List&lt;String&gt;</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>980</x>
+      <y>672</y>
+      <w>168</w>
+      <h>49</h>
+    </coordinates>
+    <panel_attributes>ToolFactory
+--
+
+--
++ createTool(String type): AgentTool</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>511</x>
+      <y>98</y>
+      <w>35</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1..1</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>665</x>
+      <y>84</y>
+      <w>35</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1..1</panel_attributes>
+    <additional_attributes>10.0;100.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>595</x>
+      <y>287</y>
+      <w>28</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>357</x>
+      <y>392</y>
+      <w>168</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>10.0;170.0;220.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>595</x>
+      <y>462</y>
+      <w>28</w>
+      <h>70</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1
+</panel_attributes>
+    <additional_attributes>10.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>602</x>
+      <y>595</y>
+      <w>35</w>
+      <h>84</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+
+  1
+
+
+1..*
+</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;100.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>560</x>
+      <y>728</y>
+      <w>49</w>
+      <h>161</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>50.0;10.0;10.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>637</x>
+      <y>728</y>
+      <w>91</w>
+      <h>161</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;110.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>294</x>
+      <y>728</y>
+      <w>287</w>
+      <h>161</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>390.0;10.0;10.0;210.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>182</x>
+      <y>693</y>
+      <w>385</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>530.0;10.0;10.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>721</y>
+      <w>231</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;310.0;220.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>686</y>
+      <w>308</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;420.0;170.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>665</y>
+      <w>322</w>
+      <h>28</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.
+creates</panel_attributes>
+    <additional_attributes>10.0;20.0;440.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>700</x>
+      <y>392</y>
+      <w>147</w>
+      <h>133</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1</panel_attributes>
+    <additional_attributes>190.0;170.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>917</x>
+      <y>602</y>
+      <w>21</w>
+      <h>287</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;390.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>203</x>
+      <y>952</y>
+      <w>21</w>
+      <h>154</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>238</x>
+      <y>952</y>
+      <w>189</w>
+      <h>154</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>10.0;200.0;250.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>700</x>
+      <y>938</y>
+      <w>28</w>
+      <h>168</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m1=1
+m2=1
+</panel_attributes>
+    <additional_attributes>10.0;220.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1141</x>
+      <y>847</y>
+      <w>28</w>
+      <h>259</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;.</panel_attributes>
+    <additional_attributes>20.0;350.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>672</x>
+      <y>1155</y>
+      <w>35</w>
+      <h>147</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1= 1
+m2= 0..*</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;190.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>532</x>
+      <y>1176</y>
+      <w>70</w>
+      <h>126</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=  1
+m2=0..*
+</panel_attributes>
+    <additional_attributes>10.0;10.0;70.0;160.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>259</x>
+      <y>1218</y>
+      <w>280</w>
+      <h>112</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;380.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>217</x>
+      <y>1267</y>
+      <w>35</w>
+      <h>91</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=0..*</panel_attributes>
+    <additional_attributes>10.0;110.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
