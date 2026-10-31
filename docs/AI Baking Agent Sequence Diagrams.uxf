@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="15.1">
+  <zoom_level>5</zoom_level>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>125</x>
+      <y>0</y>
+      <w>1020</w>
+      <h>580</h>
+    </coordinates>
+    <panel_attributes>title=SD01 Submit Baking Request for UC01 includes UC02
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=BakingAgent~a
+obj=ToolManager~tm
+obj=BakingRequestTool~brt
+obj=RecipeSearchTool~rst
+obj=LLMClient~lc
+obj=LLMService~llm
+u-&gt;g : enter request, click Submit (submitRequest)
+g-&gt;c : processRequest(request)
+c-&gt;a : processRequest(request)
+a-&gt;lc : analyzeRequest(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;a : intent
+a-&gt;tm : getTool(BakingRequestTool)
+tm.&gt;a : BakingRequestTool
+a-&gt;brt : execute(requestText)
+brt-&gt;lc : generateResponse(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;brt : response text
+brt.&gt;a : requirements from identifyRequirements
+a-&gt;tm : getTool(RecipeSearchTool)
+tm.&gt;a : RecipeSearchTool
+a-&gt;rst : execute(requirements)
+rst-&gt;lc : generateResponse(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;rst : response text
+rst.&gt;a : List of Recipe from searchRecipes
+a.&gt;c : result
+c.&gt;g : result
+g.&gt;u : displayRecipe(recipe)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>125</x>
+      <y>590</y>
+      <w>1225</w>
+      <h>595</h>
+    </coordinates>
+    <panel_attributes>title=SD02 Time Based Recommendation for UC03 includes UC02
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=BakingAgent~a
+obj=ToolManager~tm
+obj=RecipeSearchTool~rst
+obj=TimeRecommendationTool~trt
+obj=LLMClient~lc
+obj=LLMService~llm
+u-&gt;g : enter available time
+g-&gt;c : submitRequest(request)
+c-&gt;a : processRequest(request)
+a-&gt;lc : analyzeRequest(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;a : intent
+a-&gt;tm : getTool(RecipeSearchTool)
+tm.&gt;a : RecipeSearchTool
+a-&gt;rst : execute(criteria)
+rst-&gt;lc : generateResponse(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;rst : response text
+rst.&gt;a : List of Recipe from searchRecipes
+a-&gt;tm : getTool(TimeRecommendationTool)
+tm.&gt;a : TimeRecommendationTool
+a-&gt;trt : execute(recipes, availableTime)
+trt-&gt;lc : rankOptions(options)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;trt : ranked options
+trt.&gt;a : ranked recipes from filterByTime and rankRecipes
+a.&gt;c : ranked recipes from filterByTime and rankRecipes
+c.&gt;g : ranked recipes from filterByTime and rankRecipes
+g.&gt;u : displayRecipe(recipe)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>125</x>
+      <y>1210</y>
+      <w>700</w>
+      <h>445</h>
+    </coordinates>
+    <panel_attributes>title=SD03 Check Availability and Generate Shopping List for UC04 and UC08 includes UC04
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=Recipe~r
+obj=IngredientManager~im
+obj=ShoppingList~sl
+u-&gt;g : enter available ingredients
+g-&gt;c : checkIngredients(recipe, ingredients)
+c-&gt;r : getIngredients()
+r.&gt;c : List of Ingredient required
+c-&gt;im : compareIngredients(required, available)
+im.&gt;c : missing ingredients
+c.&gt;g : missing ingredients
+g.&gt;u : displayResult(result)
+u-&gt;g : click Generate Shopping List
+g-&gt;c : generateShoppingList(recipe, ingredients)
+c-&gt;r : getIngredients()
+r.&gt;c : List of Ingredient required
+c-&gt;im : compareIngredients(required, available)
+im.&gt;c : missing ingredients
+c-&gt;sl : addItem(item) for each missing item
+sl.&gt;c : ShoppingList
+c.&gt;g : ShoppingList
+g.&gt;u : displayResult(shoppingList)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>125</x>
+      <y>1680</y>
+      <w>1060</w>
+      <h>515</h>
+    </coordinates>
+    <panel_attributes>title=SD04 Find Ingredient Substitution for UC05 extends UC04
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=BakingAgent~a
+obj=ToolManager~tm
+obj=SubstitutionTool~st
+obj=IngredientManager~im
+obj=LLMClient~lc
+obj=LLMService~llm
+u-&gt;g : select missing ingredient
+g-&gt;c : processRequest(request)
+c-&gt;a : processRequest(request)
+a-&gt;lc : analyzeRequest(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;a : intent
+a-&gt;tm : getTool(SubstitutionTool)
+tm.&gt;a : SubstitutionTool
+a-&gt;st : execute(ingredient, recipe)
+st-&gt;im : findMissingIngredients(recipe)
+im.&gt;st : missing ingredients
+st-&gt;lc : generateResponse(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;st : response text
+st.&gt;a : substitute from suggestSubstitute and effect from explainEffect
+a.&gt;c : substitute from suggestSubstitute and effect from explainEffect
+c.&gt;g : substitute from suggestSubstitute and effect from explainEffect
+g.&gt;u : displayResult(substitute)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>125</x>
+      <y>2235</y>
+      <w>1150</w>
+      <h>515</h>
+    </coordinates>
+    <panel_attributes>title=SD05 Customize Recipe Taste for UC07
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=BakingAgent~a
+obj=ToolManager~tm
+obj=UserPreferences~up
+obj=TasteCustomizationTool~tct
+obj=LLMClient~lc
+obj=LLMService~llm
+u-&gt;g : enter taste request
+g-&gt;c : processRequest(request)
+c-&gt;a : processRequest(request)
+a-&gt;lc : analyzeRequest(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;a : intent
+a-&gt;up : getPreference()
+up.&gt;a : List of String
+a-&gt;tm : getTool(TasteCustomizationTool)
+tm.&gt;a : TasteCustomizationTool
+a-&gt;tct : execute(recipe, tastePreference)
+tct-&gt;lc : generateResponse(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;tct : response text
+tct.&gt;a : modified Recipe from customizeRecipe and explanation from explainChanges
+a.&gt;c : modified Recipe from customizeRecipe and explanation from explainChanges
+c.&gt;g : modified Recipe from customizeRecipe and explanation from explainChanges
+g.&gt;u : displayRecipe(recipe)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>125</x>
+      <y>2780</y>
+      <w>930</w>
+      <h>475</h>
+    </coordinates>
+    <panel_attributes>title=SD06 Troubleshoot Baking Problem for UC10
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=BakingAgent~a
+obj=ToolManager~tm
+obj=TroubleshootingTool~tst
+obj=LLMClient~lc
+obj=LLMService~llm
+u-&gt;g : describe problem
+g-&gt;c : processRequest(request)
+c-&gt;a : processRequest(request)
+a-&gt;lc : analyzeRequest(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;a : intent
+a-&gt;tm : getTool(TroubleshootingTool)
+tm.&gt;a : TroubleshootingTool
+a-&gt;tst : execute(problem)
+tst-&gt;lc : generateResponse(prompt)
+lc-&gt;llm : HTTP request
+llm.&gt;lc : JSON response
+lc.&gt;tst : response text
+tst.&gt;a : causes from analyzeProblem and fixes from suggestSolutions
+a.&gt;c : causes from analyzeProblem and fixes from suggestSolutions
+c.&gt;g : causes from analyzeProblem and fixes from suggestSolutions
+g.&gt;u : displayResult(solutions)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>125</x>
+      <y>3275</y>
+      <w>530</w>
+      <h>270</h>
+    </coordinates>
+    <panel_attributes>title=SD07 Scale Recipe for UC06
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=Recipe~r
+obj=Ingredient~i
+u-&gt;g : enter servings
+g-&gt;c : scaleRecipe(recipe, scale)
+c-&gt;r : scaleRecipe(recipe, quantity)
+r-&gt;i : updateQuantity(multiplier) for each ingredient
+i.&gt;r : updated quantity
+r.&gt;c : scaled Recipe
+c.&gt;g : scaled Recipe
+g.&gt;u : displayRecipe(recipe)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLSequenceAllInOne</id>
+    <coordinates>
+      <x>680</x>
+      <y>3275</y>
+      <w>450</w>
+      <h>295</h>
+    </coordinates>
+    <panel_attributes>title=SD08 Manage Favourite Recipes for UC09
+obj=User~u
+obj=BakingGUI~g
+obj=AgentController~c
+obj=FavouritesManager~fm
+u-&gt;g : click Favourite
+g-&gt;c : addFavourite(recipe)
+c-&gt;fm : addFavourite(recipe)
+fm.&gt;c : saved or already exists
+c.&gt;g : result
+g.&gt;u : displayResult(confirmation)
+u-&gt;g : open Favourites
+g-&gt;c : getFavourites()
+c-&gt;fm : getFavourites()
+fm.&gt;c : List of Recipe
+c.&gt;g : List of Recipe
+g.&gt;u : displayRecipe(recipe)</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
