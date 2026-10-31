@@ -13,6 +13,9 @@ class ModelsTest {
         flour.updateQuantity(1.5);
         assertEquals(3, flour.getQuantity());
         assertThrows(IllegalArgumentException.class, () -> flour.updateQuantity(-1));
+        assertThrows(IllegalArgumentException.class, () -> flour.updateQuantity(0));
+        assertThrows(IllegalArgumentException.class, () -> flour.updateQuantity(Double.NaN));
+        assertThrows(IllegalArgumentException.class, () -> flour.updateQuantity("not a number"));
     }
 
     @Test
@@ -22,7 +25,15 @@ class ModelsTest {
         Recipe doubled = recipe.scaleRecipe(recipe, 8);
         assertEquals(8, doubled.getServings());
         assertEquals(4, doubled.getIngredients().getFirst().getQuantity());
+        assertNotSame(recipe, doubled);
+        assertNotSame(recipe.getIngredients().getFirst(), doubled.getIngredients().getFirst());
         assertEquals(4, recipe.getServings());
+        assertEquals(2, recipe.getIngredients().getFirst().getQuantity());
+        assertThrows(IllegalArgumentException.class, () -> recipe.scaleRecipe(recipe, 0));
+        assertThrows(IllegalArgumentException.class, () -> recipe.scaleRecipe(recipe, -2));
+        assertThrows(IllegalArgumentException.class, () -> recipe.scaleRecipe(recipe, Double.NaN));
+        assertThrows(IllegalArgumentException.class, () -> recipe.scaleRecipe(recipe, 2.5));
+        assertThrows(IllegalArgumentException.class, () -> recipe.scaleRecipe(recipe, "many"));
         assertThrows(UnsupportedOperationException.class,
                 () -> recipe.getIngredients().add(new Ingredient("salt", 1, "tsp")));
     }

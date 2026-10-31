@@ -63,14 +63,33 @@ public class Recipe {
 
     /** Returns a scaled copy whose ingredient quantities match the requested servings. */
     public Recipe scaleRecipe(Recipe recipe, int quantity) {
+        return scaleRecipe(recipe, (double) quantity);
+    }
+
+    /** Accepts a numeric serving count and rejects non-finite or fractional values. */
+    public Recipe scaleRecipe(Recipe recipe, double quantity) {
         Objects.requireNonNull(recipe, "recipe");
-        if (quantity < 1) throw new IllegalArgumentException("quantity must be positive");
-        double multiplier = (double) quantity / recipe.servings;
+        if (!Double.isFinite(quantity) || quantity <= 0 || quantity != Math.rint(quantity)
+                || quantity > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("servings must be a positive whole number");
+        }
+        int newServings = (int) quantity;
+        double multiplier = quantity / recipe.servings;
         List<Ingredient> scaledIngredients = recipe.ingredients.stream()
                 .map(i -> new Ingredient(i.getName(), i.getQuantity() * multiplier, i.getUnit()))
                 .toList();
-        return new Recipe(recipe.recipeID, recipe.name, recipe.description, quantity,
+        return new Recipe(recipe.recipeID, recipe.name, recipe.description, newServings,
                 recipe.prepTime, recipe.bakeTime, scaledIngredients, recipe.instructions, recipe.dietaryTags);
+    }
+
+    public Recipe scaleRecipe(Recipe recipe, String quantity) {
+        final double parsed;
+        try {
+            parsed = Double.parseDouble(Objects.requireNonNull(quantity, "quantity"));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("servings must be numeric", e);
+        }
+        return scaleRecipe(recipe, parsed);
     }
 
     private static String requireText(String value, String field) {

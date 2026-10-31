@@ -22,10 +22,20 @@ public class Ingredient {
     public String getUnit() { return unit; }
 
     public void updateQuantity(double multiplier) {
-        if (!Double.isFinite(multiplier) || multiplier < 0) {
-            throw new IllegalArgumentException("multiplier must be finite and non-negative");
+        if (!Double.isFinite(multiplier) || multiplier <= 0) {
+            throw new IllegalArgumentException("multiplier must be a finite number greater than zero");
         }
         quantity *= multiplier;
+    }
+
+    public void updateQuantity(String multiplier) {
+        final double parsed;
+        try {
+            parsed = Double.parseDouble(Objects.requireNonNull(multiplier, "multiplier"));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("multiplier must be numeric", e);
+        }
+        updateQuantity(parsed);
     }
 
     private static String requireText(String value, String field) {
