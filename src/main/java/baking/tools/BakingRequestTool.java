@@ -12,6 +12,7 @@ import java.util.Objects;
 /** Extracts structured baking requirements from free-form user text. */
 public class BakingRequestTool implements AgentTool {
     private final LLMClient llmClient;
+    private BakingRequest lastParsedRequest;
 
     public BakingRequestTool(LLMClient llmClient) {
         this.llmClient = Objects.requireNonNull(llmClient, "llmClient");
@@ -34,8 +35,11 @@ public class BakingRequestTool implements AgentTool {
         List<String> restrictions = strings(fields.getOrDefault("dietaryRestrictions",
                 fields.getOrDefault("dietaryRestriction", fields.get("dietary"))));
         String taste = text(fields, "tastePreference", "taste", "flavorPreference");
-        return new BakingRequest(input, servings, availableTime, List.<Ingredient>of(), restrictions, taste);
+        lastParsedRequest = new BakingRequest(input, servings, availableTime, List.<Ingredient>of(), restrictions, taste);
+        return lastParsedRequest;
     }
+
+    public BakingRequest getLastParsedRequest() { return lastParsedRequest; }
 
     @Override
     public String getName() { return "BakingRequestTool"; }

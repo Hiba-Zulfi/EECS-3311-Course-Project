@@ -15,6 +15,7 @@ public class TimeRecommendationTool implements AgentTool {
     private final RecipeRepository repository;
     private final LLMClient llmClient;
     private String lastExplanation = "";
+    private List<Recipe> lastRecommendations = List.of();
 
     public TimeRecommendationTool(RecipeRepository repository, LLMClient llmClient) {
         this.repository = Objects.requireNonNull(repository, "repository");
@@ -27,7 +28,8 @@ public class TimeRecommendationTool implements AgentTool {
         Map<String, Object> analysis = llmClient.analyzeRequest(input);
         int minutes = availableTime(analysis);
         if (minutes <= 0) throw new IllegalArgumentException("The request must include a positive available time in minutes.");
-        List<Recipe> recommendations = recommendRecipes(repository.getAllRecipes(), minutes);
+        List<Recipe> sourceRecipes = recipesFromSearchOutput(input);
+        List<Recipe> recommendations = recommendRecipes(sourceRecipes, minutes);
         return lastExplanation + "\n" + String.join("\n", recommendations.stream()
                 .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
     }
@@ -50,6 +52,7 @@ public class TimeRecommendationTool implements AgentTool {
                 : fitting;
         if (candidates.isEmpty()) {
             lastExplanation = "No recipes are available in the catalog.";
+            lastRecommendations = List.of();
             return List.of();
         }
         List<String> rankedNames = llmClient.rankOptions(candidates.stream().map(Recipe::getName).toList());
@@ -57,6 +60,7 @@ public class TimeRecommendationTool implements AgentTool {
         lastExplanation = fallback
                 ? "No recipe fits within " + availableTime + " minutes. These are the closest-time options, ranked for your request:"
                 : "Recipes that fit within " + availableTime + " minutes, ranked for your request:";
+        lastRecommendations = ranked;
         return ranked;
     }
 
@@ -65,6 +69,7 @@ public class TimeRecommendationTool implements AgentTool {
     }
 
     public String getLastExplanation() { return lastExplanation; }
+    public List<Recipe> getLastRecommendations() { return List.copyOf(lastRecommendations); }
 
     @Override
     public String getName() { return "TimeRecommendationTool"; }
@@ -90,5 +95,14 @@ public class TimeRecommendationTool implements AgentTool {
             }
         }
         return 0;
+    }
+
+    private List<Recipe> recipesFromSearchOutput(String input) {
+        if (input.contains("No recipes matched")) return List.of();
+        List<Recipe> results = repository.getAllRecipes().stream()
+                .filter(recipe -> input.toLowerCase(Locale.ROOT)
+                        .contains(("- " + recipe.getName()).toLowerCase(Locale.ROOT)))
+                .toList();
+        return results.isEmpty() ? repository.getAllRecipes() : results;
     }
 }

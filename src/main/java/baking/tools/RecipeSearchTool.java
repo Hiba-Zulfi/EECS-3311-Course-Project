@@ -14,6 +14,7 @@ import java.util.Objects;
 public class RecipeSearchTool implements AgentTool {
     private final RecipeRepository repository;
     private final LLMClient llmClient;
+    private List<Recipe> lastSearchResults = List.of();
 
     public RecipeSearchTool(RecipeRepository repository, LLMClient llmClient) {
         this.repository = Objects.requireNonNull(repository, "repository");
@@ -33,12 +34,15 @@ public class RecipeSearchTool implements AgentTool {
         Map<String, Object> criteria = llmClient.analyzeRequest(input);
         List<String> terms = searchTerms(criteria, input);
         List<String> dietary = stringValues(criteria.getOrDefault("dietaryRestrictions", criteria.get("dietaryTags")));
-        return repository.getAllRecipes().stream()
+        lastSearchResults = repository.getAllRecipes().stream()
                 .filter(recipe -> terms.isEmpty() || terms.stream().anyMatch(term -> contains(recipe.getName(), term)))
                 .filter(recipe -> dietary.isEmpty() || dietary.stream().allMatch(tag -> recipe.getDietaryTags().stream()
                         .anyMatch(recipeTag -> recipeTag.equalsIgnoreCase(tag))))
                 .toList();
+        return lastSearchResults;
     }
+
+    public List<Recipe> getLastSearchResults() { return List.copyOf(lastSearchResults); }
 
     public String interpretRequest(String input) {
         Map<String, Object> criteria = llmClient.analyzeRequest(input);
