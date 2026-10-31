@@ -2,7 +2,6 @@ package baking.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
 /** A mutable collection of ingredients still needed for a recipe. */
