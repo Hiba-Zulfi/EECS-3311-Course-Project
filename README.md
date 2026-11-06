@@ -24,13 +24,31 @@ mvn test
 mvn compile
 ```
 
-Start the application with:
+Start the command line interface with:
 
 ```text
-mvn exec:java
+mvn exec:java "-Dexec.args=--cli"
 ```
 
-The application currently prints `Baking Agent starting`.
+The CLI sends plain language baking, recipe search, timing, substitution, taste, and troubleshooting requests to Gemini. Type `/help` for its commands. For example:
+
+```text
+/ingredients Flour:2 cups; Sugar:1 cup
+/select 1
+/check
+/scale 6
+/shopping
+/favourite
+/favourites
+```
+
+`/ingredients` accepts semicolon separated items in `Name:quantity unit` format. `/select` selects a recipe by catalog ID; `/check`, `/scale`, and `/shopping` use that selection. Use `/favourite remove` to remove the selected recipe. `/quit` exits. Input and parsing errors are printed without terminating the CLI.
+
+The GUI launch option is reserved for a later release:
+
+```text
+mvn exec:java "-Dexec.args=--gui"
+```
 
 To send the real Gemini model a small connectivity prompt and print its reply, run:
 

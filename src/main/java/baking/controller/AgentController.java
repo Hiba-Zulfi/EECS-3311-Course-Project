@@ -12,6 +12,7 @@ import baking.service.ShoppingListGenerator;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /** Facade used by all application views. */
 public final class AgentController {
@@ -45,5 +46,6 @@ public final class AgentController {
         return shoppingListGenerator.generate(recipe, available);
     }
 
-    public RecipeRepository getRecipeRepository() { return recipeRepository; }
+    public Optional<Recipe> findRecipe(int recipeId) { return recipeRepository.findById(recipeId); }
+    public List<Recipe> getRecipes() { return recipeRepository.getAllRecipes(); }
 }
