@@ -140,6 +140,8 @@ public class BakingAgent {
 
     public AgentMemory getMemory() { return memory; }
 
+    public void cancelPendingClarification() { memory.clearPendingClarification(); }
+
     private String runBakingRequestChain(String input, BakingRequest original, AgentMemory staged) {
         AgentTool requestTool = selectTool("baking request");
         String requestOutput = executeTool(requestTool, input);

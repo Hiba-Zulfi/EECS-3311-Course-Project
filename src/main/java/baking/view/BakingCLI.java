@@ -54,13 +54,13 @@ public final class BakingCLI {
             return;
         }
         String text = command.trim();
+        if (text.startsWith("/") || text.equalsIgnoreCase("quit") || text.equalsIgnoreCase("exit")) {
+            handleCommand(text.startsWith("/") ? text : "/quit");
+            return;
+        }
         if (awaitingClarification) {
             awaitingClarification = false;
             submitAgentRequest(text);
-            return;
-        }
-        if (text.startsWith("/")) {
-            handleCommand(text);
             return;
         }
         submitAgentRequest(text);
@@ -86,8 +86,13 @@ public final class BakingCLI {
             switch (name) {
                 case "/help" -> displayResult("Commands: /ingredients [Name:quantity unit; ...], /select <recipe id>, "
                         + "/check, /scale <servings>, /shopping, /favourite [remove], /favourites, /help, /quit. "
-                        + "Plain text is sent to the baking agent.");
-                case "/quit" -> running = false;
+                        + "/cancel. Plain text is sent to the baking agent.");
+                case "/quit" -> { awaitingClarification = false; running = false; }
+                case "/cancel" -> {
+                    controller.cancelClarification();
+                    awaitingClarification = false;
+                    displayResult("Clarification cancelled.");
+                }
                 case "/ingredients" -> ingredientsCommand(argument);
                 case "/select" -> selectCommand(argument);
                 case "/check" -> checkCommand(argument);

@@ -51,7 +51,7 @@ class BakingCLITest {
     }
 
     @Test
-    void clarificationAnswerIsForwardedAsPlainText() {
+    void slashQuitDuringClarificationExitsWithoutSubmittingItAsAnAnswer() {
         MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"unclear\"}");
         IngredientManager ingredients = new IngredientManager();
         AgentController controller = new AgentController(
@@ -65,7 +65,46 @@ class BakingCLITest {
         cli.submitCommand("help me");
         cli.submitCommand("/quit");
 
+        assertEquals(1, provider.getPrompts().size());
+    }
+
+    @Test
+    void cancelDuringClarificationClearsPendingRequestAndRestoresNormalInput() {
+        MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"unclear\"}");
+        IngredientManager ingredients = new IngredientManager();
+        AgentController controller = new AgentController(
+                new BakingAgent(new LLMClient(provider), new ToolManager(List.of()), new AgentMemory()),
+                ingredients, new RecipeRepository(), new FavouritesManager(temp.resolve("faves3.json")),
+                new ShoppingListGenerator(ingredients));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BakingCLI cli = new BakingCLI(controller, new ByteArrayInputStream(new byte[0]),
+                new PrintStream(output), System.err);
+
+        cli.submitCommand("help me");
+        cli.submitCommand("/cancel");
+        cli.submitCommand("cookies");
+
         assertEquals(2, provider.getPrompts().size());
-        assertTrue(provider.getPrompts().get(1).contains("/quit"));
+        assertTrue(provider.getPrompts().get(1).contains("User request: cookies"));
+        assertFalse(provider.getPrompts().get(1).contains("help me"));
+        assertTrue(output.toString().contains("Clarification cancelled."));
+    }
+
+    @Test
+    void quitAndExitWordsAreCommandsDuringClarification() {
+        MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"unclear\"}");
+        IngredientManager ingredients = new IngredientManager();
+        AgentController controller = new AgentController(
+                new BakingAgent(new LLMClient(provider), new ToolManager(List.of()), new AgentMemory()),
+                ingredients, new RecipeRepository(), new FavouritesManager(temp.resolve("faves4.json")),
+                new ShoppingListGenerator(ingredients));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BakingCLI cli = new BakingCLI(controller, new ByteArrayInputStream(new byte[0]),
+                new PrintStream(output), System.err);
+
+        cli.submitCommand("help me");
+        cli.submitCommand("quit");
+        cli.submitCommand("exit");
+        assertEquals(1, provider.getPrompts().size());
     }
 }

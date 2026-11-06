@@ -33,6 +33,7 @@ public final class AgentController {
     }
 
     public String processRequest(BakingRequest request) { return agent.processRequest(request); }
+    public void cancelClarification() { agent.cancelPendingClarification(); }
     public List<Ingredient> checkIngredients(Recipe recipe, List<Ingredient> available) {
         return ingredientManager.checkAvailability(recipe, available);
     }
