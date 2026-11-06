@@ -16,6 +16,8 @@ public class AgentMemory {
     private Recipe currentRecipe;
     private List<Recipe> lastSearchResults = List.of();
     private BakingRequest lastBakingRequest;
+    private String pendingClarificationRequest;
+    private int clarificationCount;
     private final ArrayDeque<ConversationTurn> recentConversationTurns = new ArrayDeque<>();
 
     public AgentMemory() { this(DEFAULT_TURN_LIMIT); }
@@ -35,6 +37,13 @@ public class AgentMemory {
 
     public BakingRequest getLastBakingRequest() { return lastBakingRequest; }
     public void setLastBakingRequest(BakingRequest lastBakingRequest) { this.lastBakingRequest = lastBakingRequest; }
+    public String getPendingClarificationRequest() { return pendingClarificationRequest; }
+    public int getClarificationCount() { return clarificationCount; }
+    public void setPendingClarification(String request, int count) {
+        pendingClarificationRequest = request;
+        clarificationCount = count;
+    }
+    public void clearPendingClarification() { pendingClarificationRequest = null; clarificationCount = 0; }
 
     public List<ConversationTurn> getRecentConversationTurns() { return List.copyOf(recentConversationTurns); }
 
@@ -49,6 +58,8 @@ public class AgentMemory {
         copy.currentRecipe = currentRecipe;
         copy.lastSearchResults = new ArrayList<>(lastSearchResults);
         copy.lastBakingRequest = lastBakingRequest;
+        copy.pendingClarificationRequest = pendingClarificationRequest;
+        copy.clarificationCount = clarificationCount;
         copy.recentConversationTurns.addAll(recentConversationTurns);
         return copy;
     }
@@ -59,6 +70,8 @@ public class AgentMemory {
         currentRecipe = source.currentRecipe;
         lastSearchResults = List.copyOf(source.lastSearchResults);
         lastBakingRequest = source.lastBakingRequest;
+        pendingClarificationRequest = source.pendingClarificationRequest;
+        clarificationCount = source.clarificationCount;
         recentConversationTurns.clear();
         recentConversationTurns.addAll(source.recentConversationTurns);
     }

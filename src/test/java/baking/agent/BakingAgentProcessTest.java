@@ -85,6 +85,44 @@ class BakingAgentProcessTest {
     }
 
     @Test
+    void namedFoodRequestIsRecognizedEvenIfModelMarksItUnclear() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        provider.setResponses(
+                "{\"intent\":\"unclear\"}",
+                "{\"servings\":12}",
+                "{\"searchTerm\":\"Chocolate Chip\"}");
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+        String result = agent.processRequest(request("I want chocolate chip cookies for 12 people"));
+        assertTrue(result.contains("Matching recipes"));
+        assertEquals(3, provider.getPrompts().size());
+    }
+
+    @Test
+    void recipeClarificationAnswerIsCombinedWithOriginalRequest() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        provider.setResponses(
+                "{\"intent\":\"unclear\"}",
+                "{\"intent\":\"RECIPE\"}",
+                "{\"servings\":12}",
+                "{\"searchTerm\":\"Chocolate Chip\"}");
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+        assertTrue(agent.processRequest(request("I need help with dessert"))
+                .contains("Would you like a recipe"));
+        String result = agent.processRequest(request("recipe"));
+        assertTrue(result.contains("Matching recipes"));
+        assertTrue(provider.getPrompts().get(1).contains("I need help with dessert"));
+        assertTrue(provider.getPrompts().get(1).contains("Clarification answer: recipe"));
+    }
+
+    @Test
+    void trulyUnclearInputStillAsksForClarification() {
+        MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"unclear\"}");
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+        assertTrue(agent.processRequest(request("hello" )).contains("Would you like a recipe"));
+        assertEquals(1, provider.getPrompts().size());
+    }
+
+    @Test
     void llmFailureReturnsFriendlyErrorAndLeavesAllMemoryUnchanged() {
         MockLLMProvider provider = new MockLLMProvider("unused");
         provider.setResponses("{\"intent\":\"baking request\"}");

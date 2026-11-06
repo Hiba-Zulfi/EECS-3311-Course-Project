@@ -21,17 +21,25 @@ class LLMClientTest {
         MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"find_recipe\",\"time\":30}");
         LLMClient client = new LLMClient(provider);
         Map<String, Object> result = client.analyzeRequest("I need a quick cake");
-        assertEquals("find_recipe", result.get("intent"));
+        assertEquals("recipe search", result.get("intent"));
         assertEquals(30, result.get("time"));
         assertTrue(provider.getPrompts().getFirst().contains("JSON object"));
         assertTrue(provider.getPrompts().getFirst().contains("I need a quick cake"));
     }
 
     @Test
-    void invalidIntentJsonBecomesPlainLanguageLlmException() {
+    void analyzeRequestExtractsFencedJsonAndNormalizesUppercaseIntent() {
+        MockLLMProvider provider = new MockLLMProvider("Here is the classification:\n```json\n{\"intent\":\"BAKING REQUEST\"}\n```\nDone.");
+        LLMClient client = new LLMClient(provider);
+        assertEquals("baking request", client.analyzeRequest("I want cookies").get("intent"));
+        assertTrue(provider.getPrompts().getFirst().contains("\"troubleshooting\""));
+        assertTrue(provider.getPrompts().getFirst().contains("exactly one JSON object"));
+    }
+
+    @Test
+    void malformedIntentReplyReturnsUnclear() {
         LLMClient client = new LLMClient(new MockLLMProvider("not JSON"));
-        LLMException error = assertThrows(LLMException.class, () -> client.analyzeRequest("cookies"));
-        assertTrue(error.getMessage().contains("valid intent JSON"));
+        assertEquals("unclear", client.analyzeRequest("cookies").get("intent"));
     }
 
     @Test

@@ -69,14 +69,26 @@ public class BakingAgent {
         Objects.requireNonNull(request, "request");
         AgentMemory staged = memory.copy();
         try {
-            String intent = analyzeIntent(request.getRequestText());
+            String input = request.getRequestText();
+            if (staged.getPendingClarificationRequest() != null) {
+                input = staged.getPendingClarificationRequest() + "\nClarification answer: " + input;
+                request = new BakingRequest(input, request.getDesiredServings(), request.getAvailableTime(),
+                        request.getAvailableIngredients(), request.getDietaryRestrictions(), request.getTastePreference());
+            }
+            String intent = analyzeIntent(input);
             if (UNCLEAR.equals(intent)) {
+                if (staged.getClarificationCount() >= 2) intent = "baking request";
+                else {
                 String clarification = requestClarification();
-                staged.addConversationTurn("user", request.getRequestText());
+                staged.setPendingClarification(input, staged.getClarificationCount() + 1);
+                staged.addConversationTurn("user", input);
                 staged.addConversationTurn("assistant", clarification);
                 memory.replaceWith(staged);
                 return clarification;
+                }
             }
+
+            staged.clearPendingClarification();
 
             String enrichedRequest = withStoredPreferences(request);
             staged.setLastBakingRequest(request);
@@ -99,8 +111,11 @@ public class BakingAgent {
     public String analyzeIntent(String input) {
         if (input == null || input.isBlank()) return UNCLEAR;
         Object rawIntent = llmClient.analyzeRequest(input).get("intent");
-        if (!(rawIntent instanceof String label)) return UNCLEAR;
-        return INTENT_ALIASES.getOrDefault(normalize(label), UNCLEAR);
+        if (!(rawIntent instanceof String label)) return looksLikeBakeRequest(input) ? "baking request" : UNCLEAR;
+        String normalized = normalize(label);
+        String intent = INTENT_ALIASES.getOrDefault(normalized, UNCLEAR);
+        if (UNCLEAR.equals(intent) && looksLikeBakeRequest(input)) return "baking request";
+        return intent;
     }
 
     public AgentTool selectTool(String intent) {
@@ -216,5 +231,12 @@ public class BakingAgent {
     private static String normalize(String intent) {
         return intent == null ? "" : intent.trim().toLowerCase(Locale.ROOT)
                 .replace('_', ' ').replace('-', ' ').replaceAll("\\s+", " ");
+    }
+
+    private static boolean looksLikeBakeRequest(String input) {
+        String text = input.toLowerCase(Locale.ROOT);
+        boolean asksToMake = text.matches("(?s).*(\\b(i want|i'd like|i would like|make|bake|prepare|cook)\\b).*" );
+        boolean namesFood = text.matches("(?s).*(cookie|cookies|cake|bread|muffin|brownie|pie|pastr|biscuit|scone|cupcake|loaf).*" );
+        return asksToMake && namesFood;
     }
 }
