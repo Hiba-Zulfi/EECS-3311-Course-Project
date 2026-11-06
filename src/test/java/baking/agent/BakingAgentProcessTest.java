@@ -22,8 +22,7 @@ class BakingAgentProcessTest {
         MockLLMProvider provider = new MockLLMProvider("unused");
         provider.setResponses(
                 "{\"intent\":\"baking request\"}",
-                "{\"servings\":0,\"availableTime\":0,\"dietaryRestrictions\":[],\"tastePreference\":\"\"}",
-                "{\"searchTerm\":\"Chocolate Chip\"}");
+                "{\"servings\":0,\"availableTime\":0,\"dietaryRestrictions\":[],\"tastePreference\":\"\"}");
         AgentMemory memory = new AgentMemory();
         UserPreferences preferences = new UserPreferences(6);
         preferences.addDietaryRestriction("vegetarian");
@@ -33,12 +32,15 @@ class BakingAgentProcessTest {
         String result = agent.processRequest(request("I want chocolate chip cookies"));
 
         assertTrue(result.contains("Matching recipes"));
-        assertEquals(3, provider.getPrompts().size());
-        assertTrue(provider.getPrompts().get(2).contains("Baking request parsed"));
+        assertEquals(2, provider.getPrompts().size());
+        assertTrue(provider.getPrompts().get(1).contains("Requested servings: 0")
+                || provider.getPrompts().get(1).contains("I want chocolate chip cookies"));
         assertEquals(6, memory.getLastBakingRequest().getDesiredServings());
         assertEquals(List.of("vegetarian"), memory.getLastBakingRequest().getDietaryRestrictions());
         assertEquals("less sweet", memory.getLastBakingRequest().getTastePreference());
-        assertEquals(2, memory.getLastSearchResults().size());
+        assertFalse(memory.getLastSearchResults().isEmpty());
+        assertTrue(memory.getLastSearchResults().stream().anyMatch(recipe ->
+                recipe.getName().toLowerCase().contains("chocolate chip")));
         assertEquals(memory.getLastSearchResults().getFirst(), memory.getCurrentRecipe());
         assertEquals(2, memory.getRecentConversationTurns().size());
     }
@@ -63,7 +65,7 @@ class BakingAgentProcessTest {
         assertEquals(4, provider.getPrompts().size());
         assertTrue(provider.getPrompts().get(2).contains("Previous recipe search output"));
         assertTrue(provider.getPrompts().get(2).contains("Matching recipes"));
-        assertEquals(2, memory.getLastSearchResults().size());
+        assertFalse(memory.getLastSearchResults().isEmpty());
         assertNotNull(memory.getCurrentRecipe());
         assertEquals(memory.getCurrentRecipe(), memory.getLastSearchResults().getFirst());
     }
@@ -89,12 +91,11 @@ class BakingAgentProcessTest {
         MockLLMProvider provider = new MockLLMProvider("unused");
         provider.setResponses(
                 "{\"intent\":\"unclear\"}",
-                "{\"servings\":12}",
-                "{\"searchTerm\":\"Chocolate Chip\"}");
+                "{\"servings\":12}");
         BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
         String result = agent.processRequest(request("I want chocolate chip cookies for 12 people"));
         assertTrue(result.contains("Matching recipes"));
-        assertEquals(3, provider.getPrompts().size());
+        assertEquals(2, provider.getPrompts().size());
     }
 
     @Test

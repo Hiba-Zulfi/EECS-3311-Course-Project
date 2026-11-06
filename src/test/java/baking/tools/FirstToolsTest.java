@@ -32,12 +32,39 @@ class FirstToolsTest {
         RecipeSearchTool tool = new RecipeSearchTool(new RecipeRepository(),
                 new LLMClient(new MockLLMProvider("{\"intent\":\"search\",\"searchTerm\":\"Chocolate Chip\"}")));
         List<Recipe> matches = tool.searchRecipes("find chocolate chip cookies");
-        assertEquals(2, matches.size());
+        assertTrue(matches.size() >= 2);
+        assertTrue(matches.getFirst().getName().equals("Classic Chocolate Chip Cookies"));
         assertTrue(tool.execute("find chocolate chip cookies").contains("Matching recipes"));
 
         RecipeSearchTool noMatches = new RecipeSearchTool(new RecipeRepository(),
                 new LLMClient(new MockLLMProvider("{\"searchTerm\":\"unicorn\"}")));
-        assertTrue(noMatches.execute("unicorn cake").contains("No recipes matched"));
+        assertTrue(noMatches.execute("unicorn").contains("close category match"));
+    }
+
+    @Test
+    void recipeSearchMatchesTheExactRequestDespiteServingsAndFillerWords() {
+        RecipeRepository repository = new RecipeRepository();
+        RecipeSearchTool exact = new RecipeSearchTool(repository,
+                new LLMClient(new MockLLMProvider("{}")));
+        List<Recipe> exactMatches = exact.searchRecipes(
+                "I want chocolate chip cookies for 12 people", List.of(), 0);
+        assertFalse(exactMatches.isEmpty());
+        assertTrue(exactMatches.getFirst().getName().toLowerCase().contains("chocolate chip"));
+
+        List<Recipe> fillerMatches = exact.searchRecipes(
+                "I would really like to make some chocolate chip cookies for all of my people", List.of(), 0);
+        assertEquals(exactMatches.stream().map(Recipe::getRecipeID).toList(),
+                fillerMatches.stream().map(Recipe::getRecipeID).toList());
+    }
+
+    @Test
+    void servingsDoNotExcludeRecipesAndExplicitHardFiltersStillApply() {
+        RecipeSearchTool tool = new RecipeSearchTool(new RecipeRepository(),
+                new LLMClient(new MockLLMProvider("{}")));
+        List<Recipe> matches = tool.searchRecipes("I want chocolate chip cookies for 999 people", List.of(), 0);
+        assertFalse(matches.isEmpty());
+        assertTrue(matches.stream().anyMatch(recipe -> recipe.getServings() != 999));
+        assertTrue(tool.searchRecipes("chocolate chip cookies", List.of(), 1).isEmpty());
     }
 
     @Test

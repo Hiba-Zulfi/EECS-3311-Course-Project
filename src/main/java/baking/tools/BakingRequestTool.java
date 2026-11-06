@@ -36,6 +36,11 @@ public class BakingRequestTool implements AgentTool {
                 fields.getOrDefault("dietaryRestriction", fields.get("dietary"))));
         String taste = text(fields, "tastePreference", "taste", "flavorPreference");
         lastParsedRequest = new BakingRequest(input, servings, availableTime, List.<Ingredient>of(), restrictions, taste);
+        if (debugEnabled()) {
+            System.err.println("[BAKING_DEBUG] Extracted BakingRequest: requestText=" + input + ", servings=" + servings
+                    + ", availableTime=" + availableTime + ", dietaryRestrictions=" + restrictions
+                    + ", tastePreference=" + taste);
+        }
         return lastParsedRequest;
     }
 
@@ -43,6 +48,10 @@ public class BakingRequestTool implements AgentTool {
 
     @Override
     public String getName() { return "BakingRequestTool"; }
+
+    private static boolean debugEnabled() {
+        return Boolean.parseBoolean(System.getenv().getOrDefault("BAKING_DEBUG", "false"));
+    }
 
     private static int integer(Map<String, Object> values, int fallback, String... keys) {
         for (String key : keys) {

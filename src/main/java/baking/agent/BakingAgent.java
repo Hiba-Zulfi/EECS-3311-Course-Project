@@ -147,12 +147,13 @@ public class BakingAgent {
         if (parsed == null) throw new IllegalStateException("Baking request tool did not produce a request.");
         BakingRequest effectiveRequest = applyPreferences(parsed, original);
         staged.setLastBakingRequest(effectiveRequest);
-        String searchInput = input + "\nParsed request result:\n" + requestOutput
-                + "\nUse these requirements: servings=" + effectiveRequest.getDesiredServings()
-                + ", availableTime=" + effectiveRequest.getAvailableTime()
-                + ", dietaryRestrictions=" + effectiveRequest.getDietaryRestrictions()
-                + ", tastePreference=" + effectiveRequest.getTastePreference();
-        return runRecipeSearch(searchInput, staged);
+        RecipeSearchTool searchTool = (RecipeSearchTool) selectTool("recipe search");
+        String searchResult = searchTool.execute(original.getRequestText(),
+                effectiveRequest.getDietaryRestrictions(), effectiveRequest.getAvailableTime());
+        List<Recipe> matches = searchTool.getLastSearchResults();
+        staged.setLastSearchResults(matches);
+        if (!matches.isEmpty()) staged.setCurrentRecipe(matches.getFirst());
+        return requestOutput + "\n" + searchResult;
     }
 
     private String runTimeRecommendationChain(String input, BakingRequest request, AgentMemory staged) {
