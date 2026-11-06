@@ -11,6 +11,9 @@ import java.net.http.HttpClient;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,8 +33,55 @@ class GeminiAdapterTest {
         withServer(429, "{}", 0, (adapter, server) -> {
             LLMException error = assertThrows(LLMException.class, () -> adapter.sendPrompt("hello"));
             assertTrue(error.getMessage().contains("rate limit"));
+            assertEquals(429, error.getHttpStatus());
             assertEquals(error.getMessage(), adapter.getLastError());
         });
+    }
+
+    @Test
+    void retries503WithExponentialBackoff() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicInteger requests = new AtomicInteger();
+        server.createContext("/generate", exchange -> {
+            int attempt = requests.incrementAndGet();
+            int status = attempt <= 3 ? 503 : 200;
+            byte[] body = (status == 200 ? "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"ok\"}]}}]}" : "busy")
+                    .getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(status, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            List<Duration> delays = new ArrayList<>();
+            GeminiAdapter adapter = adapter(server, Duration.ofSeconds(2), delays::add);
+            assertEquals("ok", adapter.sendPrompt("hello"));
+            assertEquals(4, requests.get());
+            assertEquals(List.of(Duration.ofSeconds(1), Duration.ofSeconds(2), Duration.ofSeconds(4)), delays);
+        } finally { server.stop(0); }
+    }
+
+    @Test
+    void retryAfterHeaderOverridesBackoff() throws Exception {
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        AtomicInteger requests = new AtomicInteger();
+        server.createContext("/generate", exchange -> {
+            int attempt = requests.incrementAndGet();
+            if (attempt == 1) exchange.getResponseHeaders().add("Retry-After", "3");
+            int status = attempt == 1 ? 429 : 200;
+            byte[] body = (status == 200 ? "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"ok\"}]}}]}" : "busy")
+                    .getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(status, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            List<Duration> delays = new ArrayList<>();
+            GeminiAdapter adapter = adapter(server, Duration.ofSeconds(2), delays::add);
+            assertEquals("ok", adapter.sendPrompt("hello"));
+            assertEquals(List.of(Duration.ofSeconds(3)), delays);
+        } finally { server.stop(0); }
     }
 
     @Test
@@ -92,11 +142,19 @@ class GeminiAdapterTest {
                     Map.of("LLM_API_KEY", "test-key", "LLM_MODEL", "gemini-test"));
             GeminiAdapter adapter = new GeminiAdapter(config, HttpClient.newHttpClient(),
                     URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/generate"),
-                    timeout, new com.fasterxml.jackson.databind.ObjectMapper());
+                    timeout, new com.fasterxml.jackson.databind.ObjectMapper(), delay -> { });
             action.run(adapter, server);
         } finally {
             server.stop(0);
         }
+    }
+
+    private static GeminiAdapter adapter(HttpServer server, Duration timeout, GeminiAdapter.Sleeper sleeper) {
+        LLMConfig config = LLMConfig.load(PathForTests.dummy(),
+                Map.of("LLM_API_KEY", "test-key", "LLM_MODEL", "gemini-test"));
+        return new GeminiAdapter(config, HttpClient.newHttpClient(),
+                URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/generate"), timeout,
+                new com.fasterxml.jackson.databind.ObjectMapper(), sleeper);
     }
 
     @FunctionalInterface
