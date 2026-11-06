@@ -7,7 +7,6 @@ import baking.service.RecipeRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -15,7 +14,6 @@ import java.util.regex.Pattern;
 /** Interprets a baking request and finds matching recipes in the local catalog. */
 public class RecipeSearchTool implements AgentTool {
     private final RecipeRepository repository;
-    private final LLMClient llmClient;
     private List<Recipe> lastSearchResults = List.of();
     private boolean closeMatch;
 
@@ -29,17 +27,17 @@ public class RecipeSearchTool implements AgentTool {
     private static final Pattern WORD = Pattern.compile("[\\p{L}]+(?:'[\\p{L}]+)?");
 
     public RecipeSearchTool(RecipeRepository repository, LLMClient llmClient) {
+        this(repository);
+        Objects.requireNonNull(llmClient, "llmClient");
+    }
+
+    public RecipeSearchTool(RecipeRepository repository) {
         this.repository = Objects.requireNonNull(repository, "repository");
-        this.llmClient = Objects.requireNonNull(llmClient, "llmClient");
     }
 
     @Override
     public String execute(String input) {
-        Map<String, Object> criteria = llmClient.analyzeRequest(input);
-        List<String> dietary = stringValues(criteria.getOrDefault("dietaryRestrictions", criteria.get("dietaryTags")));
-        int time = positiveInteger(criteria.getOrDefault("availableTime",
-                criteria.getOrDefault("availableTimeMinutes", criteria.getOrDefault("timeMinutes", criteria.get("time")))));
-        List<Recipe> matches = search(input, dietary, time);
+        List<Recipe> matches = search(input, List.of(), 0);
         if (matches.isEmpty()) return "No recipes matched the requested keywords and hard filters.";
         String heading = closeMatch ? "No exact keyword match; here is a close category match:\n" : "Matching recipes:\n";
         return heading + String.join("\n", matches.stream()
@@ -48,9 +46,7 @@ public class RecipeSearchTool implements AgentTool {
 
     public List<Recipe> searchRecipes(String input) {
         if (input == null || input.isBlank()) throw new IllegalArgumentException("search request must not be blank");
-        Map<String, Object> criteria = llmClient.analyzeRequest(input);
-        List<String> dietary = stringValues(criteria.getOrDefault("dietaryRestrictions", criteria.get("dietaryTags")));
-        return search(input, dietary, positiveInteger(criteria.get("availableTime")));
+        return search(input, List.of(), 0);
     }
 
     /** Searches the original user words and applies only structured, explicitly extracted hard filters. */
@@ -103,6 +99,13 @@ public class RecipeSearchTool implements AgentTool {
         return "Search criteria: " + keywords(input);
     }
 
+    public String formatResults(List<Recipe> recipes) {
+        if (recipes.isEmpty()) return "No recipes matched the requested keywords and hard filters.";
+        return (closeMatch ? "No exact keyword match; here is a close category match:\n" : "Matching recipes:\n")
+                + String.join("\n", recipes.stream()
+                .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
+    }
+
     @Override
     public String getName() { return "RecipeSearchTool"; }
 
@@ -150,15 +153,6 @@ public class RecipeSearchTool implements AgentTool {
         return repository.getAllRecipes().stream().limit(1).toList();
     }
 
-    private static int positiveInteger(Object value) {
-        if (value instanceof Number number) return Math.max(0, number.intValue());
-        if (value instanceof String text) {
-            try { return Math.max(0, Integer.parseInt(text.trim())); }
-            catch (NumberFormatException ignored) { return 0; }
-        }
-        return 0;
-    }
-
     private static void debugCount(String phase, int count) {
         if (debugEnabled()) System.err.println("[BAKING_DEBUG] Recipes " + phase + ": " + count);
     }
@@ -168,16 +162,5 @@ public class RecipeSearchTool implements AgentTool {
     }
 
     private record RecipeScore(Recipe recipe, int score) { }
-
-    private static List<String> stringValues(Object value) {
-        if (value instanceof List<?> list) {
-            return list.stream().filter(String.class::isInstance).map(String.class::cast)
-                    .map(String::trim).filter(text -> !text.isEmpty()).toList();
-        }
-        if (value instanceof String text && !text.isBlank()) {
-            return List.of(text.split("[,;]")).stream().map(String::trim).filter(s -> !s.isEmpty()).toList();
-        }
-        return List.of();
-    }
 
 }

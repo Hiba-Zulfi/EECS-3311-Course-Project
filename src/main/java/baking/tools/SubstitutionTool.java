@@ -23,7 +23,7 @@ public class SubstitutionTool implements AgentTool {
         if (input == null || input.isBlank()) throw new IllegalArgumentException("substitution request must not be blank");
         return "Substitution suggestion: " + llmClient.generateResponse(
                 "Suggest a practical baking ingredient substitution for this request. Explain the amount and "
-                        + "likely effect on texture or flavor. Request: " + input);
+                        + "likely effect on texture or flavor. Request: " + input, "substitution advice");
     }
 
     public String suggestSubstitute(Ingredient ingredient, Recipe recipe) {
@@ -35,13 +35,13 @@ public class SubstitutionTool implements AgentTool {
         return llmClient.generateResponse("Suggest a substitute for " + ingredient.getQuantity() + " "
                 + ingredient.getUnit() + " " + ingredient.getName() + " in recipe " + recipe.getName()
                 + ". Missing pantry ingredients: " + missingSummary
-                + ". Give a practical replacement amount and explain the effect on the bake.");
+                + ". Give a practical replacement amount and explain the effect on the bake.", "substitution advice");
     }
 
     public String explainEffect(String substitution) {
         if (substitution == null || substitution.isBlank()) throw new IllegalArgumentException("substitution must not be blank");
         return llmClient.generateResponse("Briefly explain how this baking substitution may affect texture, flavor, "
-                + "and baking time: " + substitution);
+                + "and baking time: " + substitution, "substitution explanation");
     }
 
     @Override

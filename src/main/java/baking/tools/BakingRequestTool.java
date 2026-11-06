@@ -29,7 +29,13 @@ public class BakingRequestTool implements AgentTool {
 
     public BakingRequest parseRequest(String input) {
         if (input == null || input.isBlank()) throw new IllegalArgumentException("request text must not be blank");
-        Map<String, Object> fields = llmClient.analyzeRequest(input);
+        Map<String, Object> fields = llmClient.analyzeRequest(input, "baking request extraction");
+        return parseRequest(input, fields);
+    }
+
+    public BakingRequest parseRequest(String input, Map<String, Object> fields) {
+        if (input == null || input.isBlank()) throw new IllegalArgumentException("request text must not be blank");
+        Objects.requireNonNull(fields, "fields");
         int servings = integer(fields, 0, "desiredServings", "servings", "servingCount");
         int availableTime = integer(fields, 0, "availableTime", "availableTimeMinutes", "timeMinutes", "time");
         List<String> restrictions = strings(fields.getOrDefault("dietaryRestrictions",
@@ -58,8 +64,11 @@ public class BakingRequestTool implements AgentTool {
             Object value = values.get(key);
             if (value instanceof Number number) return Math.max(0, number.intValue());
             if (value instanceof String text) {
-                try { return Math.max(0, Integer.parseInt(text.trim())); }
-                catch (NumberFormatException ignored) { /* Try another known field. */ }
+                java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("\\d+").matcher(text);
+                if (matcher.find()) {
+                    try { return Math.max(0, Integer.parseInt(matcher.group())); }
+                    catch (NumberFormatException ignored) { /* Try another known field. */ }
+                }
             }
         }
         return fallback;

@@ -54,8 +54,9 @@ class AdditionalToolsTest {
         MockLLMProvider provider = new MockLLMProvider("1. Too much leavening\n- Oven temperature was low");
         TroubleshootingTool tool = new TroubleshootingTool(new LLMClient(provider));
         String result = tool.execute("My cake sank in the middle");
-        assertTrue(result.contains("Likely causes"));
+        assertTrue(result.contains("Troubleshooting advice"));
         assertTrue(result.contains("Too much leavening"));
+        assertEquals(1, provider.getPrompts().size());
         assertEquals(2, tool.suggestSolutions("cake sank").size());
         assertTrue(tool.execute(" ").contains("Please describe what happened"));
     }

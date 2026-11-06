@@ -35,7 +35,7 @@ class BakingAgentIntentTest {
     }
 
     @Test
-    void normalizesModelIntentAliasesAndSendsStoredPreferencesToTheTool() {
+    void normalizesModelIntentAliasesAndAppliesStoredPreferencesWithoutAnotherAnalysisCall() {
         MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"recipe_search\"}");
         LLMClient llmClient = new LLMClient(provider);
         UserPreferences preferences = new UserPreferences(6);
@@ -47,10 +47,10 @@ class BakingAgentIntentTest {
         assertEquals("recipe search", agent.analyzeIntent("find a dessert"));
         assertInstanceOf(RecipeSearchTool.class, agent.selectTool("recipe_search"));
         agent.processRequest(new baking.model.BakingRequest("find a cake", 0, 0, List.of(), List.of(), ""));
-        String toolPrompt = provider.getPrompts().getLast();
-        assertTrue(toolPrompt.contains("vegan"));
-        assertTrue(toolPrompt.contains("less sweet"));
-        assertTrue(toolPrompt.contains("6"));
+        assertEquals(2, provider.getPrompts().size());
+        assertEquals(List.of("vegan"), agent.getMemory().getLastBakingRequest().getDietaryRestrictions());
+        assertEquals("less sweet", agent.getMemory().getLastBakingRequest().getTastePreference());
+        assertEquals(6, agent.getMemory().getLastBakingRequest().getDesiredServings());
     }
 
     @Test

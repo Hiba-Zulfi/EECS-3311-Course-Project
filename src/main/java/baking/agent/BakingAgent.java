@@ -68,6 +68,7 @@ public class BakingAgent {
     public String processRequest(BakingRequest request) {
         Objects.requireNonNull(request, "request");
         AgentMemory staged = memory.copy();
+        String currentStep = "intent and requirement analysis";
         try {
             String input = request.getRequestText();
             if (staged.getPendingClarificationRequest() != null) {
@@ -75,7 +76,8 @@ public class BakingAgent {
                 request = new BakingRequest(input, request.getDesiredServings(), request.getAvailableTime(),
                         request.getAvailableIngredients(), request.getDietaryRestrictions(), request.getTastePreference());
             }
-            String intent = analyzeIntent(input);
+            Map<String, Object> analysis = llmClient.analyzeRequest(input, currentStep);
+            String intent = classifyIntent(input, analysis);
             if (UNCLEAR.equals(intent)) {
                 if (staged.getClarificationCount() >= 2) intent = "baking request";
                 else {
@@ -90,12 +92,22 @@ public class BakingAgent {
 
             staged.clearPendingClarification();
 
+            BakingRequest parsed = ((BakingRequestTool) selectTool("baking request")).parseRequest(input, analysis);
+            request = mergeRequest(parsed, request);
+            request = applyPreferences(request, request);
+
             String enrichedRequest = withStoredPreferences(request);
             staged.setLastBakingRequest(request);
+            currentStep = switch (intent) {
+                case "baking request" -> "baking request recipe search";
+                case "time-based recommendation" -> "time-based recipe search and ranking";
+                case "recipe search" -> "recipe search";
+                default -> intent + " tool";
+            };
             String result = switch (intent) {
-                case "baking request" -> runBakingRequestChain(enrichedRequest, request, staged);
-                case "time-based recommendation" -> runTimeRecommendationChain(enrichedRequest, request, staged);
-                case "recipe search" -> runRecipeSearch(enrichedRequest, staged);
+                case "baking request" -> runBakingRequestChain(request, staged);
+                case "time-based recommendation" -> runTimeRecommendationChain(request, staged);
+                case "recipe search" -> runRecipeSearch(request, staged);
                 default -> executeTool(selectTool(intent), withCurrentRecipe(enrichedRequest));
             };
             staged.addConversationTurn("user", request.getRequestText());
@@ -103,14 +115,23 @@ public class BakingAgent {
             memory.replaceWith(staged);
             return result;
         } catch (LLMException e) {
-            return "I'm sorry, I couldn't complete that baking request right now. "
-                    + "Please try again in a moment.";
+            debugFailure(e, currentStep);
+            return failureMessage(e);
+        } catch (IllegalArgumentException e) {
+            return "I couldn't understand that request. " + e.getMessage();
+        } catch (RuntimeException e) {
+            debugFailure(e, currentStep);
+            return "The AI service could not complete that request. Please try again.";
         }
     }
 
     public String analyzeIntent(String input) {
         if (input == null || input.isBlank()) return UNCLEAR;
-        Object rawIntent = llmClient.analyzeRequest(input).get("intent");
+        return classifyIntent(input, llmClient.analyzeRequest(input, "intent analysis"));
+    }
+
+    private String classifyIntent(String input, Map<String, Object> analysis) {
+        Object rawIntent = analysis.get("intent");
         if (!(rawIntent instanceof String label)) return looksLikeBakeRequest(input) ? "baking request" : UNCLEAR;
         String normalized = normalize(label);
         String intent = INTENT_ALIASES.getOrDefault(normalized, UNCLEAR);
@@ -134,7 +155,7 @@ public class BakingAgent {
     }
 
     public String requestClarification() {
-        return "I'm not sure what kind of baking help you need. Would you like a recipe, a time-based recommendation, "
+        return "I couldn't understand that. Would you like a recipe, a time-based recommendation, "
                 + "an ingredient substitution, taste customization, or troubleshooting?";
     }
 
@@ -142,13 +163,14 @@ public class BakingAgent {
 
     public void cancelPendingClarification() { memory.clearPendingClarification(); }
 
-    private String runBakingRequestChain(String input, BakingRequest original, AgentMemory staged) {
-        AgentTool requestTool = selectTool("baking request");
-        String requestOutput = executeTool(requestTool, input);
-        BakingRequest parsed = ((BakingRequestTool) requestTool).getLastParsedRequest();
-        if (parsed == null) throw new IllegalStateException("Baking request tool did not produce a request.");
-        BakingRequest effectiveRequest = applyPreferences(parsed, original);
+    private String runBakingRequestChain(BakingRequest original, AgentMemory staged) {
+        BakingRequest effectiveRequest = applyPreferences(original, original);
         staged.setLastBakingRequest(effectiveRequest);
+        String requestOutput = "Baking request parsed: " + effectiveRequest.getDesiredServings() + " servings, "
+                + effectiveRequest.getAvailableTime() + " minutes available, dietary restrictions: "
+                + (effectiveRequest.getDietaryRestrictions().isEmpty() ? "none"
+                : String.join(", ", effectiveRequest.getDietaryRestrictions())) + ", taste preference: "
+                + (effectiveRequest.getTastePreference().isBlank() ? "none" : effectiveRequest.getTastePreference());
         RecipeSearchTool searchTool = (RecipeSearchTool) selectTool("recipe search");
         String searchResult = searchTool.execute(original.getRequestText(),
                 effectiveRequest.getDietaryRestrictions(), effectiveRequest.getAvailableTime());
@@ -158,27 +180,38 @@ public class BakingAgent {
         return requestOutput + "\n" + searchResult;
     }
 
-    private String runTimeRecommendationChain(String input, BakingRequest request, AgentMemory staged) {
-        AgentTool searchTool = selectTool("recipe search");
-        String searchOutput = executeTool(searchTool, input);
-        List<Recipe> matches = ((RecipeSearchTool) searchTool).getLastSearchResults();
+    private String runTimeRecommendationChain(BakingRequest request, AgentMemory staged) {
+        if (request.getAvailableTime() <= 0) {
+            return "Please tell me how many minutes you have so I can recommend recipes that fit.";
+        }
+        RecipeSearchTool searchTool = (RecipeSearchTool) selectTool("recipe search");
+        List<Recipe> matches = searchTool.searchRecipes(request.getRequestText(), request.getDietaryRestrictions(), 0);
         staged.setLastSearchResults(matches);
-        String recommendationInput = input + "\nPrevious recipe search output:\n" + searchOutput
-                + "\nAvailable time: " + request.getAvailableTime() + " minutes.";
-        AgentTool recommendationTool = selectTool("time-based recommendation");
-        String result = executeTool(recommendationTool, recommendationInput);
-        List<Recipe> ranked = ((TimeRecommendationTool) recommendationTool).getLastRecommendations();
+        TimeRecommendationTool recommendationTool = (TimeRecommendationTool) selectTool("time-based recommendation");
+        List<Recipe> ranked = recommendationTool.recommendRecipes(matches, request.getAvailableTime());
+        String result = recommendationTool.getLastExplanation() + "\n" + String.join("\n", ranked.stream()
+                .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
         if (!ranked.isEmpty()) staged.setCurrentRecipe(ranked.getFirst());
         return result;
     }
 
-    private String runRecipeSearch(String input, AgentMemory staged) {
-        AgentTool tool = selectTool("recipe search");
-        String result = executeTool(tool, input);
-        List<Recipe> matches = ((RecipeSearchTool) tool).getLastSearchResults();
+    private String runRecipeSearch(BakingRequest request, AgentMemory staged) {
+        RecipeSearchTool tool = (RecipeSearchTool) selectTool("recipe search");
+        List<Recipe> matches = tool.searchRecipes(request.getRequestText(), request.getDietaryRestrictions(),
+                request.getAvailableTime());
         staged.setLastSearchResults(matches);
         if (!matches.isEmpty()) staged.setCurrentRecipe(matches.getFirst());
-        return result;
+        return tool.formatResults(matches);
+    }
+
+    private static BakingRequest mergeRequest(BakingRequest extracted, BakingRequest supplied) {
+        LinkedHashSet<String> restrictions = new LinkedHashSet<>(extracted.getDietaryRestrictions());
+        restrictions.addAll(supplied.getDietaryRestrictions());
+        List<Ingredient> available = extracted.getAvailableIngredients().isEmpty()
+                ? supplied.getAvailableIngredients() : extracted.getAvailableIngredients();
+        return new BakingRequest(extracted.getRequestText(), firstPositive(extracted.getDesiredServings(),
+                supplied.getDesiredServings()), firstPositive(extracted.getAvailableTime(), supplied.getAvailableTime()),
+                available, List.copyOf(restrictions), firstNonBlank(extracted.getTastePreference(), supplied.getTastePreference()));
     }
 
     private BakingRequest applyPreferences(BakingRequest parsed, BakingRequest original) {
@@ -224,6 +257,27 @@ public class BakingAgent {
     private static int firstPositive(int... values) {
         for (int value : values) if (value > 0) return value;
         return 0;
+    }
+
+    private static String failureMessage(LLMException error) {
+        Integer status = error.getHttpStatus();
+        if (status != null && (status == 429 || status == 503)) {
+            return "The AI service is busy, please try again in a moment.";
+        }
+        if (error.getMessage() != null && error.getMessage().toLowerCase(Locale.ROOT).contains("timed out")) {
+            return "The AI service took too long to respond. Please try again.";
+        }
+        return "The AI service could not complete that request. Please try again.";
+    }
+
+    private static void debugFailure(Throwable error, String step) {
+        if (!Boolean.parseBoolean(System.getenv().getOrDefault("BAKING_DEBUG", "false"))) return;
+        Integer status = error instanceof LLMException llmError ? llmError.getHttpStatus() : null;
+        Throwable cause = error.getCause();
+        System.err.println("[BAKING_DEBUG] Request failure: type=" + error.getClass().getName()
+                + (cause == null ? "" : ", causeType=" + cause.getClass().getName())
+                + ", message=" + Objects.toString(error.getMessage(), "(no message)")
+                + ", httpStatus=" + (status == null ? "none" : status) + ", step=" + step);
     }
 
     private static String firstNonBlank(String... values) {

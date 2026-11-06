@@ -7,7 +7,6 @@ import baking.service.RecipeRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 /** Filters recipes by available time and asks the LLM to rank the viable options. */
@@ -25,8 +24,7 @@ public class TimeRecommendationTool implements AgentTool {
     @Override
     public String execute(String input) {
         if (input == null || input.isBlank()) throw new IllegalArgumentException("request must not be blank");
-        Map<String, Object> analysis = llmClient.analyzeRequest(input);
-        int minutes = availableTime(analysis);
+        int minutes = availableTime(input);
         if (minutes <= 0) throw new IllegalArgumentException("The request must include a positive available time in minutes.");
         List<Recipe> sourceRecipes = recipesFromSearchOutput(input);
         List<Recipe> recommendations = recommendRecipes(sourceRecipes, minutes);
@@ -55,7 +53,8 @@ public class TimeRecommendationTool implements AgentTool {
             lastRecommendations = List.of();
             return List.of();
         }
-        List<String> rankedNames = llmClient.rankOptions(candidates.stream().map(Recipe::getName).toList());
+        List<String> rankedNames = llmClient.rankOptions(candidates.stream().map(Recipe::getName).toList(),
+                "time recommendation ranking");
         List<Recipe> ranked = rankRecipes(candidates, rankedNames);
         lastExplanation = fallback
                 ? "No recipe fits within " + availableTime + " minutes. These are the closest-time options, ranked for your request:"
@@ -65,7 +64,8 @@ public class TimeRecommendationTool implements AgentTool {
     }
 
     public List<Recipe> rankRecipes(List<Recipe> recipes) {
-        return rankRecipes(recipes, llmClient.rankOptions(recipes.stream().map(Recipe::getName).toList()));
+        return rankRecipes(recipes, llmClient.rankOptions(recipes.stream().map(Recipe::getName).toList(),
+                "recipe ranking"));
     }
 
     public String getLastExplanation() { return lastExplanation; }
@@ -84,15 +84,12 @@ public class TimeRecommendationTool implements AgentTool {
         return List.copyOf(ranked);
     }
 
-    private static int availableTime(Map<String, Object> analysis) {
-        for (String key : List.of("availableTime", "availableTimeMinutes", "timeMinutes", "time")) {
-            Object value = analysis.get(key);
-            if (value instanceof Number number) return number.intValue();
-            if (value instanceof String text) {
-                String numeric = text.toLowerCase(Locale.ROOT).replace("minutes", "").replace("minute", "").trim();
-                try { return Integer.parseInt(numeric); }
-                catch (NumberFormatException ignored) { /* Try other time fields. */ }
-            }
+    private static int availableTime(String input) {
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("(?i)(\\d+)\\s*(?:minutes?|mins?)\\b").matcher(input);
+        if (matcher.find()) {
+            try { return Integer.parseInt(matcher.group(1)); }
+            catch (NumberFormatException ignored) { return 0; }
         }
         return 0;
     }

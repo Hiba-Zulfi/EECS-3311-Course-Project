@@ -23,12 +23,25 @@ public class LLMClient {
     }
 
     public String generateResponse(String prompt) {
+        return generateResponse(prompt, "text generation");
+    }
+
+    public String generateResponse(String prompt, String step) {
         if (prompt == null || prompt.isBlank()) throw new IllegalArgumentException("prompt must not be blank");
-        return provider.sendPrompt(prompt);
+        try {
+            return provider.sendPrompt(prompt);
+        } catch (RuntimeException e) {
+            debugFailure(e, step);
+            throw e;
+        }
     }
 
     /** Asks for a JSON object describing intent and returns the parsed fields. */
     public Map<String, Object> analyzeRequest(String prompt) {
+        return analyzeRequest(prompt, "request analysis");
+    }
+
+    public Map<String, Object> analyzeRequest(String prompt, String step) {
         String instruction = "Classify this baking conversation. Return exactly one JSON object and no other text. "
                 + "The intent must be one of: \"baking request\", \"recipe search\", "
                 + "\"time-based recommendation\", \"substitution\", \"taste customization\", "
@@ -36,7 +49,7 @@ public class LLMClient {
                 + "\"baking request\". A request to find or list recipes is \"recipe search\". "
                 + "Include any relevant extracted fields in the same object.\nUser request: "
                 + Objects.requireNonNull(prompt, "prompt");
-        String response = generateResponse(instruction);
+        String response = generateResponse(instruction, step);
         if (Boolean.parseBoolean(System.getenv().getOrDefault("BAKING_DEBUG", "false"))) {
             System.err.println("[BAKING_DEBUG] Raw intent reply: " + response);
         }
@@ -51,8 +64,10 @@ public class LLMClient {
             }
             return Map.copyOf(parsed);
         } catch (LLMException e) {
+            debugFailure(e, step + " response parsing");
             return Map.of("intent", "unclear");
         } catch (Exception e) {
+            debugFailure(e, step + " response parsing");
             return Map.of("intent", "unclear");
         }
     }
@@ -93,21 +108,40 @@ public class LLMClient {
 
     /** Asks the model to order options and parses its JSON string array. */
     public List<String> rankOptions(List<String> options) {
+        return rankOptions(options, "option ranking");
+    }
+
+    public List<String> rankOptions(List<String> options, String step) {
         Objects.requireNonNull(options, "options");
         if (options.isEmpty()) return List.of();
         try {
             String optionsJson = objectMapper.writeValueAsString(options);
             String response = generateResponse("Rank these baking options from best to worst for the user's request. "
-                    + "Return only a JSON array of option strings, without markdown. Options: " + optionsJson);
+                    + "Return only a JSON array of option strings, without markdown. Options: " + optionsJson, step);
             List<String> ranked = objectMapper.readValue(response, new TypeReference<>() { });
             if (ranked == null || ranked.stream().anyMatch(Objects::isNull)) {
-                throw new LLMException("The model returned an invalid ranked options list.");
+                LLMException failure = new LLMException("The model returned an invalid ranked options list.");
+                debugFailure(failure, step + " response parsing");
+                throw failure;
             }
             return List.copyOf(ranked);
         } catch (LLMException e) {
             throw e;
         } catch (Exception e) {
-            throw new LLMException("The model response was not a valid JSON options list.", e);
+            LLMException failure = new LLMException("The model response was not a valid JSON options list.", e);
+            debugFailure(failure, step + " response parsing");
+            throw failure;
         }
+    }
+
+    private static void debugFailure(Throwable failure, String step) {
+        if (!Boolean.parseBoolean(System.getenv().getOrDefault("BAKING_DEBUG", "false"))) return;
+        Integer status = failure instanceof LLMException llmFailure ? llmFailure.getHttpStatus() : null;
+        String message = failure.getMessage() == null ? "(no message)" : failure.getMessage();
+        Throwable cause = failure.getCause();
+        System.err.println("[BAKING_DEBUG] LLM failure: type=" + failure.getClass().getName()
+                + (cause == null ? "" : ", causeType=" + cause.getClass().getName())
+                + ", message=" + message + ", httpStatus=" + (status == null ? "none" : status)
+                + ", step=" + step);
     }
 }

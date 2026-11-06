@@ -26,7 +26,7 @@ public class TasteCustomizationTool implements AgentTool {
         if (input == null || input.isBlank()) throw new IllegalArgumentException("taste request must not be blank");
         return "Taste customization: " + llmClient.generateResponse(
                 "Suggest specific changes to a baking recipe to match this taste preference. "
-                        + "Explain each change and its effect: " + input);
+                        + "Explain each change and its effect: " + input, "taste customization advice");
     }
 
     /** Returns a new recipe with model-proposed ingredient quantities; the supplied recipe is unchanged. */
@@ -42,7 +42,8 @@ public class TasteCustomizationTool implements AgentTool {
         }
         String response = llmClient.generateResponse("Customize the ingredient amounts for " + recipe.getName()
                 + " to match this preference: " + preference + ". Current ingredients as JSON: " + ingredientJson
-                + ". Return only JSON with an 'ingredients' array of {name, quantity, unit} and an 'explanation' string.");
+                + ". Return only JSON with an 'ingredients' array of {name, quantity, unit} and an 'explanation' string.",
+                "taste customization");
         try {
             JsonNode root = mapper.readTree(response);
             JsonNode items = root.path("ingredients");

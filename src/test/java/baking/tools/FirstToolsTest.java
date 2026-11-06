@@ -29,12 +29,13 @@ class FirstToolsTest {
 
     @Test
     void recipeSearchReturnsCriteriaMatchesAndAnObservableFallback() {
-        RecipeSearchTool tool = new RecipeSearchTool(new RecipeRepository(),
-                new LLMClient(new MockLLMProvider("{\"intent\":\"search\",\"searchTerm\":\"Chocolate Chip\"}")));
+        MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"search\",\"searchTerm\":\"Chocolate Chip\"}");
+        RecipeSearchTool tool = new RecipeSearchTool(new RecipeRepository(), new LLMClient(provider));
         List<Recipe> matches = tool.searchRecipes("find chocolate chip cookies");
         assertTrue(matches.size() >= 2);
         assertTrue(matches.getFirst().getName().equals("Classic Chocolate Chip Cookies"));
         assertTrue(tool.execute("find chocolate chip cookies").contains("Matching recipes"));
+        assertTrue(provider.getPrompts().isEmpty());
 
         RecipeSearchTool noMatches = new RecipeSearchTool(new RecipeRepository(),
                 new LLMClient(new MockLLMProvider("{\"searchTerm\":\"unicorn\"}")));

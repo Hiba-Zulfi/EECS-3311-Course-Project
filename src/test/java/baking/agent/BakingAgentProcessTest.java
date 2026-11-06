@@ -21,8 +21,8 @@ class BakingAgentProcessTest {
     void bakingRequestRunsRequestToolThenSearchAndStoresResultsAndPreferences() {
         MockLLMProvider provider = new MockLLMProvider("unused");
         provider.setResponses(
-                "{\"intent\":\"baking request\"}",
-                "{\"servings\":0,\"availableTime\":0,\"dietaryRestrictions\":[],\"tastePreference\":\"\"}");
+                "{\"intent\":\"baking request\",\"servings\":0,\"availableTime\":0,"
+                        + "\"dietaryRestrictions\":[],\"tastePreference\":\"\"}");
         AgentMemory memory = new AgentMemory();
         UserPreferences preferences = new UserPreferences(6);
         preferences.addDietaryRestriction("vegetarian");
@@ -32,9 +32,8 @@ class BakingAgentProcessTest {
         String result = agent.processRequest(request("I want chocolate chip cookies"));
 
         assertTrue(result.contains("Matching recipes"));
-        assertEquals(2, provider.getPrompts().size());
-        assertTrue(provider.getPrompts().get(1).contains("Requested servings: 0")
-                || provider.getPrompts().get(1).contains("I want chocolate chip cookies"));
+        assertEquals(1, provider.getPrompts().size());
+        assertTrue(provider.getPrompts().getFirst().contains("I want chocolate chip cookies"));
         assertEquals(6, memory.getLastBakingRequest().getDesiredServings());
         assertEquals(List.of("vegetarian"), memory.getLastBakingRequest().getDietaryRestrictions());
         assertEquals("less sweet", memory.getLastBakingRequest().getTastePreference());
@@ -51,9 +50,7 @@ class BakingAgentProcessTest {
         String rankedCandidates = "[\"Classic Chocolate Chip Cookies\",\"Vegan Chocolate Chip Muffins\"]";
         MockLLMProvider provider = new MockLLMProvider("unused");
         provider.setResponses(
-                "{\"intent\":\"time-based recommendation\"}",
-                "{\"searchTerm\":\"Chocolate Chip\"}",
-                "{\"availableTime\":10}",
+                "{\"intent\":\"time-based recommendation\",\"availableTime\":10}",
                 rankedCandidates);
         AgentMemory memory = new AgentMemory();
         BakingAgent agent = new BakingAgent(new LLMClient(provider),
@@ -62,9 +59,8 @@ class BakingAgentProcessTest {
         String result = agent.processRequest(request("I have ten minutes for chocolate chip"));
 
         assertTrue(result.contains("No recipe fits within 10 minutes"));
-        assertEquals(4, provider.getPrompts().size());
-        assertTrue(provider.getPrompts().get(2).contains("Previous recipe search output"));
-        assertTrue(provider.getPrompts().get(2).contains("Matching recipes"));
+        assertEquals(2, provider.getPrompts().size());
+        assertTrue(provider.getPrompts().get(1).contains("Rank these baking options"));
         assertFalse(memory.getLastSearchResults().isEmpty());
         assertNotNull(memory.getCurrentRecipe());
         assertEquals(memory.getCurrentRecipe(), memory.getLastSearchResults().getFirst());
@@ -90,12 +86,11 @@ class BakingAgentProcessTest {
     void namedFoodRequestIsRecognizedEvenIfModelMarksItUnclear() {
         MockLLMProvider provider = new MockLLMProvider("unused");
         provider.setResponses(
-                "{\"intent\":\"unclear\"}",
-                "{\"servings\":12}");
+                "{\"intent\":\"unclear\",\"servings\":12}");
         BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
         String result = agent.processRequest(request("I want chocolate chip cookies for 12 people"));
         assertTrue(result.contains("Matching recipes"));
-        assertEquals(2, provider.getPrompts().size());
+        assertEquals(1, provider.getPrompts().size());
     }
 
     @Test
@@ -103,9 +98,7 @@ class BakingAgentProcessTest {
         MockLLMProvider provider = new MockLLMProvider("unused");
         provider.setResponses(
                 "{\"intent\":\"unclear\"}",
-                "{\"intent\":\"RECIPE\"}",
-                "{\"servings\":12}",
-                "{\"searchTerm\":\"Chocolate Chip\"}");
+                "{\"intent\":\"RECIPE\",\"servings\":12}");
         BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
         assertTrue(agent.processRequest(request("I need help with dessert"))
                 .contains("Would you like a recipe"));
@@ -124,10 +117,25 @@ class BakingAgentProcessTest {
     }
 
     @Test
+    void specialistRequestsUseOneCombinedAnalysisAndOneToolCall() {
+        assertSpecialistCalls("substitution", "What can replace butter in cookies?", "Use oil instead.");
+        assertSpecialistCalls("taste customization", "Make these cookies less sweet", "Reduce sugar by 20%.");
+        assertSpecialistCalls("troubleshooting", "My cake sank in the middle", "Check the leavening and oven temperature.");
+    }
+
+    @Test
+    void rateLimitFailureGetsSpecificUserMessage() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        provider.setFailureOnCall(1, new LLMException("Gemini rate limit reached (HTTP 429).", 429));
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+        assertTrue(agent.processRequest(request("suggest a substitution"))
+                .contains("The AI service is busy, please try again"));
+    }
+
+    @Test
     void llmFailureReturnsFriendlyErrorAndLeavesAllMemoryUnchanged() {
         MockLLMProvider provider = new MockLLMProvider("unused");
-        provider.setResponses("{\"intent\":\"baking request\"}");
-        provider.setFailureOnCall(2, new LLMException("mock provider unavailable"));
+        provider.setFailureOnCall(1, new LLMException("mock provider unavailable"));
         AgentMemory memory = new AgentMemory();
         Recipe previous = recipe();
         BakingRequest previousRequest = new BakingRequest("old request", 4, 30, List.of(), List.of(), "vanilla");
@@ -140,7 +148,7 @@ class BakingAgentProcessTest {
 
         String result = agent.processRequest(request("find me a cake"));
 
-        assertTrue(result.contains("couldn't complete"));
+        assertTrue(result.contains("AI service could not complete"));
         assertSame(previous, memory.getCurrentRecipe());
         assertEquals(List.of(previous), memory.getLastSearchResults());
         assertSame(previousRequest, memory.getLastBakingRequest());
@@ -151,6 +159,14 @@ class BakingAgentProcessTest {
         LLMClient client = new LLMClient(provider);
         return new BakingAgent(client, new ToolManager(client, new RecipeRepository(), new IngredientManager()),
                 memory, preferences);
+    }
+
+    private static void assertSpecialistCalls(String intent, String request, String toolReply) {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        provider.setResponses("{\"intent\":\"" + intent + "\"}", toolReply);
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+        assertFalse(agent.processRequest(request(request)).isBlank());
+        assertEquals(2, provider.getPrompts().size(), intent);
     }
 
     private static BakingRequest request(String text) {
