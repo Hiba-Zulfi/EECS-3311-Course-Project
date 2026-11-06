@@ -103,7 +103,7 @@ public class BakingAgent {
             memory.replaceWith(staged);
             return result;
         } catch (LLMException e) {
-            return "I’m sorry, I couldn’t complete that baking request right now. "
+            return "I'm sorry, I couldn't complete that baking request right now. "
                     + "Please try again in a moment.";
         }
     }
@@ -134,7 +134,7 @@ public class BakingAgent {
     }
 
     public String requestClarification() {
-        return "I’m not sure what kind of baking help you need. Would you like a recipe, a time-based recommendation, "
+        return "I'm not sure what kind of baking help you need. Would you like a recipe, a time-based recommendation, "
                 + "an ingredient substitution, taste customization, or troubleshooting?";
     }
 

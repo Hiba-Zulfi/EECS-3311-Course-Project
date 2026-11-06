@@ -139,7 +139,7 @@ class BakingAgentProcessTest {
 
         String result = agent.processRequest(request("find me a cake"));
 
-        assertTrue(result.contains("couldn’t complete"));
+        assertTrue(result.contains("couldn't complete"));
         assertSame(previous, memory.getCurrentRecipe());
         assertEquals(List.of(previous), memory.getLastSearchResults());
         assertSame(previousRequest, memory.getLastBakingRequest());
