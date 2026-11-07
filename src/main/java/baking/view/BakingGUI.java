@@ -10,6 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,6 +27,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +52,12 @@ public final class BakingGUI {
     private final JList<Recipe> recipeList = recipeList(recipeModel);
 
     private final JPanel recipeToolsPanel = new JPanel();
+    private final JPanel recipeToolsWorkspace = new JPanel(new BorderLayout(8, 8));
+    private final JPanel shoppingNotepad = new JPanel(new BorderLayout());
+    private final PaperPanel notepadPaper = new PaperPanel();
+    private final SpiralHeader notepadHeader = new SpiralHeader();
+    private final JButton closeNotepadButton = new JButton("X");
+    private final JLabel shoppingRecipeName = new JLabel();
     private final JLabel servingsError = new JLabel(" ");
     private final JLabel ingredientsError = new JLabel(" ");
     private final JTextField servingsField = new JTextField();
@@ -115,6 +126,8 @@ public final class BakingGUI {
         setRecipeToolsEnabled(false);
         setAIHelpEnabled(false);
         BakingTheme.apply(frame, frame.getContentPane(), currentRecipeBanner, tabs);
+        styleShoppingNotepad();
+        tabs.setIconAt(3, GuiIcons.heart(15));
         tabs.addChangeListener(event -> {
             if (tabs.getSelectedIndex() == 3) refreshFavourites();
         });
@@ -167,12 +180,25 @@ public final class BakingGUI {
         shoppingButton.addActionListener(event -> makeShoppingList());
         saveFavouriteButton.addActionListener(event -> saveFavourite());
         actions.add(shoppingButton);
+        saveFavouriteButton.setIcon(GuiIcons.heart(16));
         actions.add(saveFavouriteButton);
+
+        JPanel resultsColumn = new JPanel(new BorderLayout(8, 8));
+        resultsColumn.add(output, BorderLayout.CENTER);
+        resultsColumn.add(actions, BorderLayout.SOUTH);
+        shoppingNotepad.setPreferredSize(new Dimension(285, 400));
+        shoppingNotepad.setVisible(false);
+        closeNotepadButton.addActionListener(event -> closeShoppingNotepad());
+        notepadHeader.setLayout(new BorderLayout());
+        notepadHeader.add(closeNotepadButton, BorderLayout.EAST);
+        shoppingNotepad.add(notepadHeader, BorderLayout.NORTH);
+        shoppingNotepad.add(new JScrollPane(notepadPaper), BorderLayout.CENTER);
+        recipeToolsWorkspace.add(resultsColumn, BorderLayout.CENTER);
+        recipeToolsWorkspace.add(shoppingNotepad, BorderLayout.EAST);
 
         JPanel center = new JPanel(new BorderLayout(8, 8));
         center.add(toolRow, BorderLayout.NORTH);
-        center.add(output, BorderLayout.CENTER);
-        center.add(actions, BorderLayout.SOUTH);
+        center.add(recipeToolsWorkspace, BorderLayout.CENTER);
         recipeToolsPanel.add(center, BorderLayout.CENTER);
         return recipeToolsPanel;
     }
@@ -192,6 +218,18 @@ public final class BakingGUI {
         JPanel panel = tabPanel();
         panel.add(instruction("Your saved recipes are here. Choose one explicitly to work with it."), BorderLayout.NORTH);
         JPanel listPanel = new JPanel(new BorderLayout(6, 6));
+        favouritesList.setCellRenderer(new DefaultListCellRenderer() {
+            @Override public Component getListCellRendererComponent(JList<?> owner, Object value, int index,
+                    boolean selected, boolean focus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(owner, value, index, selected, focus);
+                if (value instanceof Recipe recipe) {
+                    label.setText("[" + recipe.getRecipeID() + "] " + recipe.getName());
+                    label.setIcon(GuiIcons.heart(14));
+                    label.setIconTextGap(8);
+                }
+                return label;
+            }
+        });
         listPanel.add(emptyFavouritesMessage, BorderLayout.NORTH);
         listPanel.add(new JScrollPane(favouritesList), BorderLayout.CENTER);
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
@@ -277,6 +315,7 @@ public final class BakingGUI {
     private JPanel buildScaleGroup() {
         JPanel group = titledGroup("Scale recipe");
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        row.add(new JLabel(GuiIcons.measuringCup(24)));
         row.add(new JLabel("Servings"));
         servingsField.setColumns(7);
         row.add(servingsField);
@@ -446,9 +485,63 @@ public final class BakingGUI {
     }
 
     private void makeShoppingList() {
-        ShoppingList list = controller.generateShoppingList(requireSelectedRecipe(), availableIngredients);
-        showRecipeResult(list.getItems().isEmpty() ? "Your shopping list is empty."
+        Recipe recipe = requireSelectedRecipe();
+        ShoppingList list = controller.generateShoppingList(recipe, availableIngredients);
+        showRecipeResult(list.getItems().isEmpty() ? "Nothing to buy - you have it all!"
                 : "Shopping list: " + formatIngredients(list.getItems()));
+        populateShoppingNotepad(recipe, list.getItems());
+        shoppingNotepad.setVisible(true);
+        recipeToolsWorkspace.revalidate();
+        recipeToolsWorkspace.repaint();
+    }
+
+    private void populateShoppingNotepad(Recipe recipe, List<Ingredient> missing) {
+        notepadPaper.removeAll();
+        JLabel title = new JLabel("Shopping list");
+        title.setFont(title.getFont().deriveFont(java.awt.Font.BOLD, 16f));
+        title.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel recipeName = new JLabel(htmlWrap(recipe.getName(), 220));
+        recipeName.setAlignmentX(Component.LEFT_ALIGNMENT);
+        notepadPaper.add(javax.swing.Box.createVerticalStrut(10));
+        notepadPaper.add(title);
+        notepadPaper.add(javax.swing.Box.createVerticalStrut(4));
+        notepadPaper.add(recipeName);
+        notepadPaper.add(javax.swing.Box.createVerticalStrut(14));
+        if (missing.isEmpty()) {
+            JLabel nothing = new JLabel("<html><div style='width:220px'>Nothing to buy -<br>you have it all!</div></html>");
+            nothing.setAlignmentX(Component.LEFT_ALIGNMENT);
+            notepadPaper.add(nothing);
+        } else {
+            for (Ingredient ingredient : missing) {
+                JCheckBox item = new JCheckBox(htmlWrap(QuantityFormatter.formatIngredient(ingredient), 205));
+                item.setOpaque(false);
+                item.setAlignmentX(Component.LEFT_ALIGNMENT);
+                item.setToolTipText(QuantityFormatter.formatIngredient(ingredient));
+                notepadPaper.add(item);
+                notepadPaper.add(javax.swing.Box.createVerticalStrut(5));
+            }
+        }
+        notepadPaper.revalidate();
+        notepadPaper.repaint();
+    }
+
+    private void closeShoppingNotepad() {
+        shoppingNotepad.setVisible(false);
+        recipeToolsWorkspace.revalidate();
+        recipeToolsWorkspace.repaint();
+    }
+
+    private void styleShoppingNotepad() {
+        shoppingNotepad.setOpaque(true);
+        shoppingNotepad.setBackground(new Color(0xFF, 0xFD, 0xF7));
+        shoppingNotepad.setBorder(BorderFactory.createLineBorder(BakingTheme.DEEP_PINK, 1));
+        notepadHeader.setPreferredSize(new Dimension(260, 26));
+        notepadHeader.setOpaque(false);
+        closeNotepadButton.setPreferredSize(new Dimension(36, 25));
+        notepadPaper.setBackground(new Color(0xFF, 0xFD, 0xF7));
+        notepadPaper.setForeground(BakingTheme.TEXT);
+        notepadPaper.setBorder(BorderFactory.createEmptyBorder(0, 12, 12, 10));
+        notepadPaper.setLayout(new javax.swing.BoxLayout(notepadPaper, javax.swing.BoxLayout.Y_AXIS));
     }
 
     private void saveFavourite() {
@@ -685,6 +778,11 @@ public final class BakingGUI {
         return QuantityFormatter.formatIngredients(ingredients);
     }
 
+    private static String htmlWrap(String text, int width) {
+        String escaped = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
+        return "<html><div style='width:" + width + "px'>" + escaped + "</div></html>";
+    }
+
     private static String formatIngredient(Ingredient ingredient) {
         return QuantityFormatter.formatIngredient(ingredient);
     }
@@ -721,6 +819,38 @@ public final class BakingGUI {
 
     private static String placeholderValue(JTextArea field, String placeholder) {
         return field.getText().equals(placeholder) ? "" : field.getText().trim();
+    }
+
+    private static final class SpiralHeader extends JPanel {
+        @Override protected void paintComponent(Graphics graphics) {
+            Graphics2D g = (Graphics2D) graphics.create();
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setColor(BakingTheme.SOFT_PINK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            for (int x = 12; x < getWidth(); x += 22) {
+                g.setColor(new Color(0xFF, 0xFD, 0xF7));
+                g.fillOval(x, 6, 10, 10);
+                g.setColor(BakingTheme.DEEP_PINK);
+                g.drawOval(x, 6, 10, 10);
+            }
+            g.dispose();
+        }
+    }
+
+    private static final class PaperPanel extends JPanel {
+        private static final Color PAPER = new Color(0xFF, 0xFD, 0xF7);
+        private static final Color RULE = new Color(0xF4, 0xD6, 0xE0);
+
+        @Override protected void paintComponent(Graphics graphics) {
+            super.paintComponent(graphics);
+            Graphics2D g = (Graphics2D) graphics.create();
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g.setColor(PAPER);
+            g.fillRect(0, 0, getWidth(), getHeight());
+            g.setColor(RULE);
+            for (int y = 82; y < getHeight(); y += 25) g.drawLine(0, y, getWidth(), y);
+            g.dispose();
+        }
     }
 
     private void showError(String message) { findResults.setText("Error: " + message); }
