@@ -1,39 +1,2395 @@
 [
-  {"recipeID":1,"name":"Classic Chocolate Chip Cookies","description":"Chewy cookies with crisp edges and chocolate chunks.","servings":24,"prepTime":15,"bakeTime":11,"dietaryTags":["vegetarian"],"ingredients":[{"name":"all-purpose flour","quantity":2.25,"unit":"cups"},{"name":"butter","quantity":1,"unit":"cup"},{"name":"chocolate chips","quantity":2,"unit":"cups"}],"instructions":["Cream butter and sugars.","Mix in dry ingredients and chocolate.","Bake at 350 F until golden."]},
-  {"recipeID":2,"name":"Oatmeal Raisin Cookies","description":"Soft spiced oatmeal cookies with raisins.","servings":20,"prepTime":18,"bakeTime":12,"dietaryTags":["vegetarian"],"ingredients":[{"name":"rolled oats","quantity":2,"unit":"cups"},{"name":"flour","quantity":1.5,"unit":"cups"},{"name":"raisins","quantity":1,"unit":"cup"}],"instructions":["Combine oats and dry ingredients.","Stir in butter, egg, and raisins.","Bake at 350 F for 12 minutes."]},
-  {"recipeID":3,"name":"Peanut Butter Cookies","description":"Tender peanut butter cookies with a classic fork pattern.","servings":18,"prepTime":12,"bakeTime":10,"dietaryTags":["vegetarian","gluten-free option"],"ingredients":[{"name":"peanut butter","quantity":1,"unit":"cup"},{"name":"sugar","quantity":1,"unit":"cup"},{"name":"egg","quantity":1,"unit":"large"}],"instructions":["Mix ingredients into a dough.","Shape and press with a fork.","Bake at 350 F until set."]},
-  {"recipeID":4,"name":"Lemon Shortbread Cookies","description":"Buttery shortbread brightened with lemon zest.","servings":24,"prepTime":20,"bakeTime":14,"dietaryTags":["vegetarian"],"ingredients":[{"name":"butter","quantity":1,"unit":"cup"},{"name":"flour","quantity":2,"unit":"cups"},{"name":"lemon zest","quantity":1,"unit":"tablespoon"}],"instructions":["Cream butter and sugar with lemon zest.","Mix in flour and chill briefly.","Slice and bake at 325 F."]},
-  {"recipeID":5,"name":"Vegan Double Chocolate Cookies","description":"Rich cocoa cookies made without dairy or eggs.","servings":16,"prepTime":15,"bakeTime":12,"dietaryTags":["vegan","dairy-free"],"ingredients":[{"name":"flour","quantity":1.5,"unit":"cups"},{"name":"cocoa powder","quantity":0.5,"unit":"cup"},{"name":"dark chocolate","quantity":1,"unit":"cup"}],"instructions":["Whisk dry ingredients.","Stir in oil, plant milk, and chocolate.","Bake at 350 F for 12 minutes."]},
-  {"recipeID":6,"name":"Gluten-Free Almond Cookies","description":"Chewy almond cookies with a delicate crisp crust.","servings":18,"prepTime":10,"bakeTime":13,"dietaryTags":["gluten-free","dairy-free"],"ingredients":[{"name":"almond flour","quantity":2,"unit":"cups"},{"name":"sugar","quantity":0.75,"unit":"cup"},{"name":"egg whites","quantity":2,"unit":"large"}],"instructions":["Fold ingredients into a sticky dough.","Shape into small rounds.","Bake at 325 F until lightly browned."]},
-  {"recipeID":7,"name":"Fudgy Brownies","description":"Dense chocolate brownies with a shiny crackled top.","servings":16,"prepTime":15,"bakeTime":28,"dietaryTags":["vegetarian"],"ingredients":[{"name":"dark chocolate","quantity":200,"unit":"g"},{"name":"butter","quantity":0.75,"unit":"cup"},{"name":"flour","quantity":0.75,"unit":"cup"}],"instructions":["Melt chocolate and butter.","Whisk in sugar and eggs, then fold in flour.","Bake at 350 F and cool before slicing."]},
-  {"recipeID":8,"name":"Walnut Brownies","description":"Classic cocoa brownies with toasted walnuts.","servings":16,"prepTime":14,"bakeTime":30,"dietaryTags":["vegetarian"],"ingredients":[{"name":"cocoa powder","quantity":0.75,"unit":"cup"},{"name":"butter","quantity":1,"unit":"cup"},{"name":"walnuts","quantity":1,"unit":"cup"}],"instructions":["Whisk melted butter with cocoa and sugar.","Add eggs, flour, and walnuts.","Bake at 350 F until the center is just set."]},
-  {"recipeID":9,"name":"Vegan Sweet Potato Brownies","description":"Moist cocoa brownies naturally sweetened with sweet potato.","servings":12,"prepTime":20,"bakeTime":25,"dietaryTags":["vegan","dairy-free","egg-free"],"ingredients":[{"name":"sweet potato puree","quantity":1,"unit":"cup"},{"name":"cocoa powder","quantity":0.5,"unit":"cup"},{"name":"oat flour","quantity":1,"unit":"cup"}],"instructions":["Whisk puree with maple syrup.","Fold in cocoa and oat flour.","Bake at 350 F until firm at the edges."]},
-  {"recipeID":10,"name":"Gluten-Free Tahini Brownies","description":"Fudgy sesame brownies made with almond flour.","servings":12,"prepTime":15,"bakeTime":24,"dietaryTags":["gluten-free","dairy-free"],"ingredients":[{"name":"tahini","quantity":0.75,"unit":"cup"},{"name":"cocoa powder","quantity":0.5,"unit":"cup"},{"name":"almond flour","quantity":0.75,"unit":"cup"}],"instructions":["Whisk tahini with eggs and sugar.","Stir in cocoa and almond flour.","Bake at 350 F and cool fully."]},
-  {"recipeID":11,"name":"No-Knead Country Bread","description":"Crusty artisan loaf with a chewy open crumb.","servings":10,"prepTime":20,"bakeTime":45,"dietaryTags":["vegan","dairy-free"],"ingredients":[{"name":"bread flour","quantity":3.5,"unit":"cups"},{"name":"water","quantity":1.5,"unit":"cups"},{"name":"yeast","quantity":0.25,"unit":"teaspoon"}],"instructions":["Mix ingredients into a shaggy dough.","Rest covered overnight.","Bake in a hot covered pot until deeply browned."]},
-  {"recipeID":12,"name":"Whole Wheat Sandwich Bread","description":"Soft everyday loaf with a mild nutty flavor.","servings":12,"prepTime":25,"bakeTime":35,"dietaryTags":["vegetarian"],"ingredients":[{"name":"whole wheat flour","quantity":2,"unit":"cups"},{"name":"bread flour","quantity":1.5,"unit":"cups"},{"name":"milk","quantity":1,"unit":"cup"}],"instructions":["Knead ingredients until smooth.","Let rise until doubled and shape into a loaf.","Bake at 375 F until hollow sounding."]},
-  {"recipeID":13,"name":"Banana Bread","description":"Moist quick bread made with ripe bananas.","servings":10,"prepTime":15,"bakeTime":55,"dietaryTags":["vegetarian"],"ingredients":[{"name":"ripe bananas","quantity":3,"unit":"large"},{"name":"flour","quantity":2,"unit":"cups"},{"name":"butter","quantity":0.5,"unit":"cup"}],"instructions":["Mash bananas and mix with wet ingredients.","Fold in flour just until combined.","Bake at 350 F until a tester comes out clean."]},
-  {"recipeID":14,"name":"Rosemary Focaccia","description":"Olive oil rich bread topped with rosemary and sea salt.","servings":12,"prepTime":25,"bakeTime":25,"dietaryTags":["vegan","dairy-free"],"ingredients":[{"name":"bread flour","quantity":4,"unit":"cups"},{"name":"olive oil","quantity":0.5,"unit":"cup"},{"name":"rosemary","quantity":2,"unit":"tablespoons"}],"instructions":["Mix and proof the dough until airy.","Press into an oiled pan and dimple the surface.","Top with rosemary and bake at 425 F."]},
-  {"recipeID":15,"name":"Gluten-Free Seeded Loaf","description":"Hearty gluten-free loaf packed with seeds.","servings":12,"prepTime":20,"bakeTime":50,"dietaryTags":["gluten-free","dairy-free"],"ingredients":[{"name":"gluten-free flour blend","quantity":3,"unit":"cups"},{"name":"sunflower seeds","quantity":0.5,"unit":"cup"},{"name":"psyllium husk","quantity":2,"unit":"tablespoons"}],"instructions":["Whisk dry ingredients and seeds.","Add warm water and rest the dough.","Bake at 375 F until the loaf sounds hollow."]},
-  {"recipeID":16,"name":"Blueberry Muffins","description":"Fluffy muffins filled with juicy blueberries.","servings":12,"prepTime":15,"bakeTime":22,"dietaryTags":["vegetarian"],"ingredients":[{"name":"flour","quantity":2,"unit":"cups"},{"name":"blueberries","quantity":1.5,"unit":"cups"},{"name":"milk","quantity":0.75,"unit":"cup"}],"instructions":["Whisk dry and wet ingredients separately.","Combine gently and fold in blueberries.","Bake at 375 F until golden."]},
-  {"recipeID":17,"name":"Apple Cinnamon Muffins","description":"Tender muffins with fresh apple and cinnamon.","servings":12,"prepTime":18,"bakeTime":23,"dietaryTags":["vegetarian"],"ingredients":[{"name":"flour","quantity":2,"unit":"cups"},{"name":"apple","quantity":1.5,"unit":"cups"},{"name":"cinnamon","quantity":1,"unit":"teaspoon"}],"instructions":["Toss diced apple with cinnamon.","Fold into the muffin batter.","Bake at 375 F until a tester comes out clean."]},
-  {"recipeID":18,"name":"Vegan Chocolate Chip Muffins","description":"Dairy-free muffins with chocolate chips.","servings":12,"prepTime":15,"bakeTime":20,"dietaryTags":["vegan","dairy-free","egg-free"],"ingredients":[{"name":"flour","quantity":2,"unit":"cups"},{"name":"plant milk","quantity":1,"unit":"cup"},{"name":"vegan chocolate chips","quantity":0.75,"unit":"cup"}],"instructions":["Whisk plant milk, oil, and sugar.","Fold in dry ingredients and chocolate chips.","Bake at 375 F until risen and golden."]},
-  {"recipeID":19,"name":"Gluten-Free Lemon Poppy Seed Muffins","description":"Bright lemon muffins with a tender gluten-free crumb.","servings":12,"prepTime":17,"bakeTime":21,"dietaryTags":["gluten-free","vegetarian"],"ingredients":[{"name":"gluten-free flour blend","quantity":2,"unit":"cups"},{"name":"lemon juice","quantity":2,"unit":"tablespoons"},{"name":"poppy seeds","quantity":1,"unit":"tablespoon"}],"instructions":["Whisk flour and poppy seeds.","Mix with eggs, yogurt, lemon, and sugar.","Bake at 375 F until lightly browned."]},
-  {"recipeID":20,"name":"Vanilla Birthday Cake","description":"Soft vanilla layer cake with a simple buttercream.","servings":12,"prepTime":30,"bakeTime":30,"dietaryTags":["vegetarian"],"ingredients":[{"name":"cake flour","quantity":2.5,"unit":"cups"},{"name":"butter","quantity":1,"unit":"cup"},{"name":"vanilla extract","quantity":2,"unit":"teaspoons"}],"instructions":["Cream butter and sugar until fluffy.","Beat in eggs and fold in flour with milk.","Bake in two pans at 350 F and frost when cool."]},
-  {"recipeID":21,"name":"Carrot Cake","description":"Spiced carrot cake with a moist crumb.","servings":12,"prepTime":25,"bakeTime":40,"dietaryTags":["vegetarian"],"ingredients":[{"name":"grated carrots","quantity":2,"unit":"cups"},{"name":"flour","quantity":2,"unit":"cups"},{"name":"walnuts","quantity":0.5,"unit":"cup"}],"instructions":["Whisk oil, sugar, and eggs.","Fold in carrots, flour, spices, and walnuts.","Bake at 350 F until the center springs back."]},
-  {"recipeID":22,"name":"Vegan Chocolate Cake","description":"Deep chocolate cake made without dairy or eggs.","servings":10,"prepTime":18,"bakeTime":34,"dietaryTags":["vegan","dairy-free","egg-free"],"ingredients":[{"name":"flour","quantity":1.75,"unit":"cups"},{"name":"cocoa powder","quantity":0.5,"unit":"cup"},{"name":"vinegar","quantity":1,"unit":"tablespoon"}],"instructions":["Whisk dry ingredients.","Stir in water, oil, and vinegar.","Bake at 350 F until a tester comes out clean."]},
-  {"recipeID":23,"name":"Flourless Chocolate Cake","description":"Rich, naturally gluten-free chocolate dessert cake.","servings":10,"prepTime":20,"bakeTime":28,"dietaryTags":["gluten-free","vegetarian"],"ingredients":[{"name":"dark chocolate","quantity":200,"unit":"g"},{"name":"butter","quantity":0.5,"unit":"cup"},{"name":"eggs","quantity":4,"unit":"large"}],"instructions":["Melt chocolate and butter together.","Whisk in eggs and sugar.","Bake in a lined pan at 350 F and chill before serving."]},
-  {"recipeID":24,"name":"Lemon Drizzle Cake","description":"Light loaf cake finished with a tart lemon glaze.","servings":10,"prepTime":20,"bakeTime":45,"dietaryTags":["vegetarian"],"ingredients":[{"name":"flour","quantity":1.75,"unit":"cups"},{"name":"butter","quantity":0.75,"unit":"cup"},{"name":"lemons","quantity":2,"unit":"whole"}],"instructions":["Cream butter and sugar, then beat in eggs.","Fold in flour and lemon zest.","Bake at 350 F and drizzle with lemon syrup."]},
-  {"recipeID":25,"name":"Vegan Coconut Cake","description":"Tender coconut cake with plant-based ingredients.","servings":12,"prepTime":25,"bakeTime":32,"dietaryTags":["vegan","dairy-free","egg-free"],"ingredients":[{"name":"flour","quantity":2,"unit":"cups"},{"name":"coconut milk","quantity":1,"unit":"cup"},{"name":"shredded coconut","quantity":0.75,"unit":"cup"}],"instructions":["Whisk coconut milk with oil, sugar, and vanilla.","Fold in flour and shredded coconut.","Bake at 350 F until golden and springy."]},
-  {"recipeID":26,"name":"French Macarons","description":"Delicate almond meringue cookies with smooth shells and a crisp-chewy center.","servings":24,"prepTime":45,"bakeTime":16,"dietaryTags":["gluten-free","vegetarian","dessert","cookies"],"ingredients":[{"name":"almond flour","quantity":1.25,"unit":"cups"},{"name":"powdered sugar","quantity":1.75,"unit":"cups"},{"name":"egg whites","quantity":3,"unit":"large"},{"name":"granulated sugar","quantity":0.25,"unit":"cup"},{"name":"buttercream filling","quantity":0.5,"unit":"cup"}],"instructions":["Sift almond flour and powdered sugar together.","Whip egg whites with granulated sugar to stiff glossy peaks and fold in the dry mixture.","Pipe rounds onto lined trays, rest until dry to the touch, then bake at 300 F for 14 to 16 minutes.","Cool completely and sandwich with buttercream."]},
-  {"recipeID":27,"name":"Classic Baked Cheesecake","description":"Creamy vanilla cheesecake on a buttery graham cracker crust.","servings":12,"prepTime":25,"bakeTime":60,"dietaryTags":["vegetarian","dessert","cake"],"ingredients":[{"name":"graham cracker crumbs","quantity":2,"unit":"cups"},{"name":"butter","quantity":0.5,"unit":"cup"},{"name":"cream cheese","quantity":24,"unit":"oz"},{"name":"granulated sugar","quantity":1,"unit":"cup"},{"name":"eggs","quantity":3,"unit":"large"},{"name":"vanilla extract","quantity":2,"unit":"teaspoons"}],"instructions":["Press crumbs mixed with melted butter into a springform pan and prebake at 350 F for 8 minutes.","Beat cream cheese and sugar until smooth, then mix in eggs one at a time and add vanilla.","Pour over the crust and bake in a water bath at 325 F until the center is just set.","Cool gradually and chill for at least 4 hours before slicing."]},
-  {"recipeID":28,"name":"Soft Cinnamon Rolls","description":"Pillowy yeast rolls filled with cinnamon sugar and finished with vanilla glaze.","servings":12,"prepTime":35,"bakeTime":25,"dietaryTags":["vegetarian","breakfast","bread"],"ingredients":[{"name":"all-purpose flour","quantity":4,"unit":"cups"},{"name":"warm milk","quantity":1,"unit":"cup"},{"name":"active dry yeast","quantity":2.25,"unit":"teaspoons"},{"name":"butter","quantity":0.75,"unit":"cup"},{"name":"brown sugar","quantity":0.75,"unit":"cup"},{"name":"ground cinnamon","quantity":1.5,"unit":"tablespoons"}],"instructions":["Bloom yeast in warm milk with a spoonful of sugar.","Mix with flour, egg, and softened butter and knead until smooth; let rise until doubled.","Roll dough out, spread with butter, and sprinkle with brown sugar and cinnamon.","Roll, slice, proof until puffy, and bake at 350 F for 20 to 25 minutes.","Drizzle with a simple vanilla glaze while warm."]},
-  {"recipeID":29,"name":"Buttermilk Scones","description":"Tender, flaky breakfast scones with lightly crisp tops.","servings":8,"prepTime":18,"bakeTime":18,"dietaryTags":["vegetarian","breakfast","pastry"],"ingredients":[{"name":"all-purpose flour","quantity":2.25,"unit":"cups"},{"name":"granulated sugar","quantity":0.33,"unit":"cup"},{"name":"baking powder","quantity":1,"unit":"tablespoon"},{"name":"cold butter","quantity":0.5,"unit":"cup"},{"name":"buttermilk","quantity":0.75,"unit":"cup"}],"instructions":["Whisk flour, sugar, baking powder, and salt.","Cut in cold butter until the mixture has pea-sized pieces.","Stir in buttermilk just until a soft dough forms and shape into a round.","Cut into wedges, brush with milk, and bake at 400 F for 16 to 18 minutes."]},
-  {"recipeID":30,"name":"Classic Sugar Cookies","description":"Buttery sugar cookies that hold their shape and decorate beautifully.","servings":30,"prepTime":25,"bakeTime":10,"dietaryTags":["vegetarian","dessert","cookies"],"ingredients":[{"name":"all-purpose flour","quantity":3,"unit":"cups"},{"name":"butter","quantity":1,"unit":"cup"},{"name":"granulated sugar","quantity":1,"unit":"cup"},{"name":"egg","quantity":1,"unit":"large"},{"name":"vanilla extract","quantity":2,"unit":"teaspoons"}],"instructions":["Cream butter and sugar until pale and fluffy.","Beat in egg and vanilla, then mix in flour and a pinch of salt.","Chill dough for 30 minutes, roll out, and cut into shapes.","Bake at 350 F for 8 to 10 minutes and cool before decorating."]},
-  {"recipeID":31,"name":"Classic Apple Pie","description":"Flaky double crust filled with cinnamon-spiced apples.","servings":8,"prepTime":35,"bakeTime":55,"dietaryTags":["vegetarian","dessert","pie"],"ingredients":[{"name":"pie dough","quantity":2,"unit":"discs"},{"name":"apples","quantity":6,"unit":"medium"},{"name":"granulated sugar","quantity":0.75,"unit":"cup"},{"name":"all-purpose flour","quantity":0.25,"unit":"cup"},{"name":"ground cinnamon","quantity":1,"unit":"teaspoon"},{"name":"butter","quantity":2,"unit":"tablespoons"}],"instructions":["Heat oven to 425 F and line a pie plate with one dough disc.","Toss sliced apples with sugar, flour, cinnamon, and a pinch of salt.","Fill the crust, dot with butter, cover with the second crust, and seal the edges.","Vent the top and bake 20 minutes, then reduce heat to 375 F and bake 35 minutes until bubbling.","Cool for at least 2 hours before serving."]},
-  {"recipeID":32,"name":"Vanilla Cupcakes","description":"Light vanilla cupcakes topped with a simple buttercream frosting.","servings":12,"prepTime":20,"bakeTime":20,"dietaryTags":["vegetarian","dessert","cake"],"ingredients":[{"name":"all-purpose flour","quantity":1.5,"unit":"cups"},{"name":"butter","quantity":0.5,"unit":"cup"},{"name":"granulated sugar","quantity":0.75,"unit":"cup"},{"name":"eggs","quantity":2,"unit":"large"},{"name":"milk","quantity":0.5,"unit":"cup"},{"name":"vanilla extract","quantity":2,"unit":"teaspoons"}],"instructions":["Cream butter and sugar until fluffy.","Beat in eggs and vanilla, then alternate mixing in flour and milk.","Divide batter among 12 lined muffin cups.","Bake at 350 F for 18 to 20 minutes and cool completely before frosting."]},
-  {"recipeID":33,"name":"Butter Croissants","description":"Laminated French pastries with crisp golden layers and a tender center.","servings":12,"prepTime":90,"bakeTime":20,"dietaryTags":["vegetarian","breakfast","pastry"],"ingredients":[{"name":"bread flour","quantity":4,"unit":"cups"},{"name":"cold butter","quantity":1.25,"unit":"cups"},{"name":"warm milk","quantity":1,"unit":"cup"},{"name":"active dry yeast","quantity":2.25,"unit":"teaspoons"},{"name":"granulated sugar","quantity":0.25,"unit":"cup"}],"instructions":["Mix flour, yeast, sugar, salt, and milk into a smooth dough and chill.","Enclose a cold butter block in the dough and roll and fold it in three turns, chilling between turns.","Roll out, cut into triangles, and shape into crescents.","Proof until light and puffy, brush with egg wash, and bake at 400 F for about 20 minutes."]},
-  {"recipeID":34,"name":"Banana Muffins","description":"Moist, tender muffins made with ripe bananas and a hint of cinnamon.","servings":12,"prepTime":15,"bakeTime":22,"dietaryTags":["vegetarian","breakfast","muffins"],"ingredients":[{"name":"ripe bananas","quantity":3,"unit":"medium"},{"name":"all-purpose flour","quantity":1.75,"unit":"cups"},{"name":"granulated sugar","quantity":0.5,"unit":"cup"},{"name":"butter","quantity":0.33,"unit":"cup"},{"name":"eggs","quantity":2,"unit":"large"},{"name":"ground cinnamon","quantity":0.5,"unit":"teaspoon"}],"instructions":["Mash the bananas and stir in melted butter, sugar, and eggs.","Whisk flour, baking soda, cinnamon, and salt in a separate bowl.","Fold dry ingredients into the banana mixture just until combined.","Divide into a lined muffin pan and bake at 350 F for 20 to 22 minutes."]},
-  {"recipeID":35,"name":"Skillet Cornbread","description":"Golden, tender cornbread with crisp buttery edges.","servings":9,"prepTime":12,"bakeTime":22,"dietaryTags":["vegetarian","bread","side dish"],"ingredients":[{"name":"yellow cornmeal","quantity":1,"unit":"cup"},{"name":"all-purpose flour","quantity":1,"unit":"cup"},{"name":"buttermilk","quantity":1,"unit":"cup"},{"name":"eggs","quantity":2,"unit":"large"},{"name":"melted butter","quantity":0.25,"unit":"cup"},{"name":"honey","quantity":2,"unit":"tablespoons"}],"instructions":["Heat oven to 400 F and warm a greased cast-iron skillet.","Whisk cornmeal, flour, baking powder, and salt.","Mix buttermilk, eggs, melted butter, and honey, then fold into the dry ingredients.","Pour batter into the hot skillet and bake for 20 to 22 minutes until golden."]},
-  {"recipeID":36,"name":"Fluffy Buttermilk Pancakes","description":"Soft breakfast pancakes with crisp edges and a light, airy crumb.","servings":4,"prepTime":10,"bakeTime":15,"dietaryTags":["vegetarian","breakfast"],"ingredients":[{"name":"all-purpose flour","quantity":1.5,"unit":"cups"},{"name":"buttermilk","quantity":1.25,"unit":"cups"},{"name":"egg","quantity":1,"unit":"large"},{"name":"melted butter","quantity":3,"unit":"tablespoons"},{"name":"baking powder","quantity":2,"unit":"teaspoons"},{"name":"granulated sugar","quantity":2,"unit":"tablespoons"}],"instructions":["Whisk flour, baking powder, sugar, and a pinch of salt.","Whisk buttermilk, egg, and melted butter, then stir into the dry mixture until just combined.","Rest batter for 5 minutes while a lightly greased griddle heats over medium heat.","Cook pancakes until bubbles form, flip, and cook the second side until golden."]},
-  {"recipeID":37,"name":"Tangy Lemon Bars","description":"Bright lemon curd baked over a buttery shortbread crust and dusted with sugar.","servings":16,"prepTime":20,"bakeTime":40,"dietaryTags":["vegetarian","dessert","bars"],"ingredients":[{"name":"all-purpose flour","quantity":1.5,"unit":"cups"},{"name":"butter","quantity":0.75,"unit":"cup"},{"name":"powdered sugar","quantity":0.5,"unit":"cup"},{"name":"granulated sugar","quantity":1.5,"unit":"cups"},{"name":"eggs","quantity":4,"unit":"large"},{"name":"lemon juice","quantity":0.5,"unit":"cup"}],"instructions":["Heat oven to 350 F and line an 8-inch square pan.","Mix flour, softened butter, and powdered sugar; press into the pan and bake for 18 to 20 minutes.","Whisk granulated sugar, eggs, lemon juice, and a little flour until smooth.","Pour filling over the warm crust and bake for 20 to 25 minutes until just set.","Cool fully, chill, and dust with powdered sugar before cutting into bars."]}
+  {
+    "recipeID": 1,
+    "name": "Classic Chocolate Chip Cookies",
+    "description": "Chewy cookies with crisp edges and chocolate chunks.",
+    "servings": 24,
+    "prepTime": 15,
+    "bakeTime": 11,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2.25,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "brown sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "chocolate chips",
+        "quantity": 2,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line baking sheets.",
+      "Cream butter with granulated sugar and brown sugar until fluffy, then beat in eggs and vanilla extract.",
+      "Whisk flour with baking soda and salt, then mix it into the butter mixture and fold in chocolate chips.",
+      "Scoop dough onto the sheets and bake for 9 to 11 minutes until the edges are golden."
+    ]
+  },
+  {
+    "recipeID": 2,
+    "name": "Oatmeal Raisin Cookies",
+    "description": "Soft spiced oatmeal cookies with raisins.",
+    "servings": 20,
+    "prepTime": 18,
+    "bakeTime": 12,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "rolled oats",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "brown sugar",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "ground cinnamon",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "raisins",
+        "quantity": 1,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line baking sheets.",
+      "Cream butter with both sugars, beat in eggs and vanilla, then stir in raisins.",
+      "Combine flour, oats, baking soda, cinnamon, and salt; mix into the wet ingredients.",
+      "Scoop onto the sheets and bake 10 to 12 minutes until set."
+    ]
+  },
+  {
+    "recipeID": 3,
+    "name": "Peanut Butter Cookies",
+    "description": "Tender peanut butter cookies with a classic fork pattern.",
+    "servings": 18,
+    "prepTime": 12,
+    "bakeTime": 10,
+    "dietaryTags": [
+      "vegetarian",
+      "gluten-free"
+    ],
+    "ingredients": [
+      {
+        "name": "creamy peanut butter",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "almond flour",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "egg",
+        "quantity": 1,
+        "unit": "count"
+      },
+      {
+        "name": "neutral oil",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a baking sheet.",
+      "Stir peanut butter, sugar, egg, oil, and vanilla until smooth.",
+      "Fold in almond flour, baking soda, and salt to make a soft dough.",
+      "Roll into balls, press with a fork, and bake 9 to 10 minutes."
+    ]
+  },
+  {
+    "recipeID": 4,
+    "name": "Lemon Shortbread Cookies",
+    "description": "Buttery shortbread brightened with lemon zest.",
+    "servings": 24,
+    "prepTime": 20,
+    "bakeTime": 14,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "egg yolk",
+        "quantity": 1,
+        "unit": "count"
+      },
+      {
+        "name": "lemon zest",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "lemon juice",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Cream butter and sugar with lemon zest until pale, then mix in egg yolk, lemon juice, and vanilla.",
+      "Whisk flour, baking powder, and salt; stir into the butter mixture to make a soft dough.",
+      "Chill the dough for 30 minutes, roll it out, and cut into rounds.",
+      "Bake at 325 F for 12 to 14 minutes until the edges are lightly golden."
+    ]
+  },
+  {
+    "recipeID": 5,
+    "name": "Vegan Double Chocolate Cookies",
+    "description": "Rich cocoa cookies made without dairy or eggs.",
+    "servings": 16,
+    "prepTime": 15,
+    "bakeTime": 12,
+    "dietaryTags": [
+      "vegan",
+      "dairy-free"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "cocoa powder",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "brown sugar",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "coconut oil",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "unsweetened applesauce",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "water",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "vegan chocolate chips",
+        "quantity": 1,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line baking sheets.",
+      "Whisk flour, cocoa, baking soda, and salt in a bowl.",
+      "Stir coconut oil with both sugars, applesauce, water, and vanilla; fold in the dry mixture and vegan chocolate chips.",
+      "Scoop dough onto the sheets and bake 10 to 12 minutes."
+    ]
+  },
+  {
+    "recipeID": 6,
+    "name": "Gluten-Free Almond Cookies",
+    "description": "Chewy almond cookies with a delicate crisp crust.",
+    "servings": 18,
+    "prepTime": 10,
+    "bakeTime": 13,
+    "dietaryTags": [
+      "gluten-free",
+      "dairy-free",
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "almond flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "egg whites",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "neutral oil",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "lemon juice",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 325 F and line a baking sheet.",
+      "Whisk almond flour, sugar, baking powder, and salt.",
+      "Beat egg whites until foamy, then stir in oil, lemon juice, and vanilla; fold in the almond mixture.",
+      "Shape into small rounds and bake 12 to 13 minutes until lightly browned."
+    ]
+  },
+  {
+    "recipeID": 7,
+    "name": "Fudgy Brownies",
+    "description": "Dense chocolate brownies with a shiny crackled top.",
+    "servings": 16,
+    "prepTime": 15,
+    "bakeTime": 28,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "dark chocolate",
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1.25,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "all-purpose flour",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "cocoa powder",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "walnuts",
+        "quantity": 0.5,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a square pan.",
+      "Melt dark chocolate with butter and let it cool slightly, then whisk in sugar, eggs, and vanilla.",
+      "Fold in flour, cocoa, baking powder, salt, and walnuts just until combined.",
+      "Spread in the pan and bake about 28 minutes; cool before slicing."
+    ]
+  },
+  {
+    "recipeID": 8,
+    "name": "Walnut Brownies",
+    "description": "Classic cocoa brownies with toasted walnuts.",
+    "servings": 16,
+    "prepTime": 14,
+    "bakeTime": 30,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "cocoa powder",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "walnuts",
+        "quantity": 1,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and grease a square pan.",
+      "Melt butter and whisk in cocoa and sugar; beat in eggs and vanilla.",
+      "Fold in flour, baking powder, salt, and walnuts.",
+      "Bake 28 to 30 minutes until the center is just set, then cool."
+    ]
+  },
+  {
+    "recipeID": 9,
+    "name": "Vegan Sweet Potato Brownies",
+    "description": "Moist cocoa brownies naturally sweetened with sweet potato.",
+    "servings": 12,
+    "prepTime": 20,
+    "bakeTime": 25,
+    "dietaryTags": [
+      "vegan",
+      "dairy-free",
+      "egg-free",
+      "gluten-free"
+    ],
+    "ingredients": [
+      {
+        "name": "sweet potato puree",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "cocoa powder",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "certified gluten-free oat flour",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "brown sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "coconut oil",
+        "quantity": 0.33,
+        "unit": "cup"
+      },
+      {
+        "name": "water",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "vegan chocolate chips",
+        "quantity": 0.5,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a square pan.",
+      "Whisk sweet potato puree with brown sugar, coconut oil, water, and vanilla.",
+      "Stir in cocoa, certified gluten-free oat flour, baking powder, and salt, then fold in vegan chocolate chips.",
+      "Spread in the pan and bake about 25 minutes until firm at the edges."
+    ]
+  },
+  {
+    "recipeID": 10,
+    "name": "Gluten-Free Tahini Brownies",
+    "description": "Fudgy sesame brownies made with almond flour.",
+    "servings": 12,
+    "prepTime": 15,
+    "bakeTime": 24,
+    "dietaryTags": [
+      "gluten-free",
+      "dairy-free",
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "tahini",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "cocoa powder",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "almond flour",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "maple syrup",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "dark chocolate",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a square pan.",
+      "Whisk tahini, sugar, eggs, maple syrup, and vanilla until smooth.",
+      "Fold in cocoa, almond flour, baking powder, salt, and chopped dark chocolate.",
+      "Bake 22 to 24 minutes and cool fully before cutting."
+    ]
+  },
+  {
+    "recipeID": 11,
+    "name": "No-Knead Country Bread",
+    "description": "Crusty artisan loaf with a chewy open crumb.",
+    "servings": 10,
+    "prepTime": 20,
+    "bakeTime": 45,
+    "dietaryTags": [
+      "vegan",
+      "dairy-free"
+    ],
+    "ingredients": [
+      {
+        "name": "bread flour",
+        "quantity": 3.5,
+        "unit": "cup"
+      },
+      {
+        "name": "water",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "active dry yeast",
+        "quantity": 0.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 1.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "olive oil",
+        "quantity": 1,
+        "unit": "tbsp"
+      }
+    ],
+    "instructions": [
+      "Stir water with yeast and sugar and let it stand until foamy.",
+      "Mix in bread flour, salt, and olive oil until a shaggy dough forms.",
+      "Cover and leave at room temperature overnight, then shape the risen dough.",
+      "Bake in a preheated covered pot at 450 F for 30 minutes covered and 15 minutes uncovered."
+    ]
+  },
+  {
+    "recipeID": 12,
+    "name": "Whole Wheat Sandwich Bread",
+    "description": "Soft everyday loaf with a mild nutty flavor.",
+    "servings": 12,
+    "prepTime": 25,
+    "bakeTime": 35,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "whole wheat flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "bread flour",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "warm water",
+        "quantity": 1.25,
+        "unit": "cup"
+      },
+      {
+        "name": "active dry yeast",
+        "quantity": 2.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "olive oil",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 1.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Dissolve yeast and sugar in warm water and let foam.",
+      "Mix whole wheat flour, bread flour, salt, and olive oil into the yeast mixture.",
+      "Knead until smooth, let rise until doubled, then shape into a loaf and rise again.",
+      "Bake at 375 F for about 35 minutes until the loaf sounds hollow."
+    ]
+  },
+  {
+    "recipeID": 13,
+    "name": "Banana Bread",
+    "description": "Moist quick bread made with ripe bananas.",
+    "servings": 10,
+    "prepTime": 15,
+    "bakeTime": 55,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "ripe bananas",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "all-purpose flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "brown sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "ground cinnamon",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and grease a loaf pan.",
+      "Mash bananas and mix with melted butter, brown sugar, eggs, and vanilla.",
+      "Whisk flour, baking soda, salt, and cinnamon, then fold into the banana mixture.",
+      "Bake 50 to 55 minutes until a tester comes out clean."
+    ]
+  },
+  {
+    "recipeID": 14,
+    "name": "Rosemary Focaccia",
+    "description": "Olive oil rich bread topped with rosemary and sea salt.",
+    "servings": 12,
+    "prepTime": 25,
+    "bakeTime": 25,
+    "dietaryTags": [
+      "vegan",
+      "dairy-free"
+    ],
+    "ingredients": [
+      {
+        "name": "bread flour",
+        "quantity": 4,
+        "unit": "cup"
+      },
+      {
+        "name": "warm water",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "active dry yeast",
+        "quantity": 2.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "olive oil",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "fresh rosemary",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "coarse sea salt",
+        "quantity": 1,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Dissolve yeast and sugar in warm water and leave until foamy.",
+      "Mix bread flour, fine salt, and half the olive oil into a soft dough; knead briefly and let rise until airy.",
+      "Press dough into an oiled pan, dimple it, and drizzle with the remaining olive oil.",
+      "Top with rosemary and coarse sea salt, then bake at 425 F for about 25 minutes."
+    ]
+  },
+  {
+    "recipeID": 15,
+    "name": "Gluten-Free Seeded Loaf",
+    "description": "Hearty gluten-free loaf packed with seeds.",
+    "servings": 12,
+    "prepTime": 20,
+    "bakeTime": 50,
+    "dietaryTags": [
+      "gluten-free",
+      "dairy-free"
+    ],
+    "ingredients": [
+      {
+        "name": "gluten-free flour blend",
+        "quantity": 3,
+        "unit": "cup"
+      },
+      {
+        "name": "warm water",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "instant yeast",
+        "quantity": 2.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "psyllium husk",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "olive oil",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "honey",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 1.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "sunflower seeds",
+        "quantity": 0.5,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Whisk warm water with psyllium husk and let it gel for 5 minutes.",
+      "Stir in yeast, honey, olive oil, gluten-free flour blend, and salt to make a thick dough; fold in sunflower seeds.",
+      "Rest until slightly risen, then transfer to a loaf pan and smooth the top.",
+      "Bake at 375 F for about 50 minutes and cool completely before slicing."
+    ]
+  },
+  {
+    "recipeID": 16,
+    "name": "Blueberry Muffins",
+    "description": "Fluffy muffins filled with juicy blueberries.",
+    "servings": 12,
+    "prepTime": 15,
+    "bakeTime": 22,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "milk",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "blueberries",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 375 F and line a muffin pan.",
+      "Whisk flour, sugar, baking powder, and salt.",
+      "Whisk melted butter with eggs, milk, and vanilla, then fold into the dry mixture and gently add blueberries.",
+      "Divide among 12 cups and bake about 22 minutes until golden."
+    ]
+  },
+  {
+    "recipeID": 17,
+    "name": "Apple Cinnamon Muffins",
+    "description": "Tender muffins with fresh apple and cinnamon.",
+    "servings": 12,
+    "prepTime": 18,
+    "bakeTime": 23,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "neutral oil",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "diced apple",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "milk",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "ground cinnamon",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 375 F and line a muffin pan.",
+      "Whisk flour, baking powder, cinnamon, and salt.",
+      "Beat sugar with oil, eggs, milk, and vanilla; fold in the flour mixture and diced apple.",
+      "Divide into 12 cups and bake 21 to 23 minutes until a tester comes out clean."
+    ]
+  },
+  {
+    "recipeID": 18,
+    "name": "Vegan Chocolate Chip Muffins",
+    "description": "Dairy-free muffins with chocolate chips.",
+    "servings": 12,
+    "prepTime": 15,
+    "bakeTime": 20,
+    "dietaryTags": [
+      "vegan",
+      "dairy-free",
+      "egg-free"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "brown sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "neutral oil",
+        "quantity": 0.33,
+        "unit": "cup"
+      },
+      {
+        "name": "unsweetened applesauce",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "coconut cream",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "water",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "vegan chocolate chips",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 375 F and line a muffin pan.",
+      "Whisk flour, baking powder, and salt.",
+      "Stir brown sugar, oil, applesauce, coconut cream, water, and vanilla together; fold in the dry mixture and vegan chocolate chips.",
+      "Divide among 12 cups and bake about 20 minutes until risen and golden."
+    ]
+  },
+  {
+    "recipeID": 19,
+    "name": "Gluten-Free Lemon Poppy Seed Muffins",
+    "description": "Bright lemon muffins with a tender gluten-free crumb.",
+    "servings": 12,
+    "prepTime": 17,
+    "bakeTime": 21,
+    "dietaryTags": [
+      "gluten-free",
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "gluten-free flour blend",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "yogurt",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "lemon juice",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "lemon zest",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "poppy seeds",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 375 F and line a muffin pan.",
+      "Whisk gluten-free flour blend with poppy seeds, baking powder, and salt.",
+      "Beat butter and sugar, then mix in eggs, yogurt, lemon juice, and lemon zest.",
+      "Fold in the dry ingredients, divide among 12 cups, and bake about 21 minutes."
+    ]
+  },
+  {
+    "recipeID": 20,
+    "name": "Vanilla Birthday Cake",
+    "description": "Soft vanilla layer cake with a simple buttercream.",
+    "servings": 12,
+    "prepTime": 30,
+    "bakeTime": 30,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "cake flour",
+        "quantity": 2.5,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "milk",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 2.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and grease two round pans.",
+      "Whisk cake flour with baking powder and salt.",
+      "Cream butter and sugar, beat in eggs and vanilla, then add the flour mixture alternately with milk.",
+      "Divide between pans and bake about 30 minutes; cool before frosting."
+    ]
+  },
+  {
+    "recipeID": 21,
+    "name": "Carrot Cake",
+    "description": "Spiced carrot cake with a moist crumb.",
+    "servings": 12,
+    "prepTime": 25,
+    "bakeTime": 40,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "neutral oil",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "grated carrots",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "crushed pineapple",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "walnuts",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "ground cinnamon",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and grease a cake pan.",
+      "Whisk flour, baking soda, cinnamon, and salt.",
+      "Beat sugar, oil, eggs, and vanilla; fold in carrots, pineapple, and walnuts.",
+      "Stir in the dry mixture and bake about 40 minutes until the center springs back."
+    ]
+  },
+  {
+    "recipeID": 22,
+    "name": "Vegan Chocolate Cake",
+    "description": "Deep chocolate cake made without dairy or eggs.",
+    "servings": 10,
+    "prepTime": 18,
+    "bakeTime": 34,
+    "dietaryTags": [
+      "vegan",
+      "dairy-free",
+      "egg-free"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.75,
+        "unit": "cup"
+      },
+      {
+        "name": "cocoa powder",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "neutral oil",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "water",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "apple cider vinegar",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and grease a cake pan.",
+      "Whisk flour, cocoa, sugar, baking soda, and salt.",
+      "Stir water with oil, vinegar, and vanilla, then mix into the dry ingredients until smooth.",
+      "Bake about 34 minutes until a tester comes out clean."
+    ]
+  },
+  {
+    "recipeID": 23,
+    "name": "Flourless Chocolate Cake",
+    "description": "Rich, naturally gluten-free chocolate dessert cake.",
+    "servings": 10,
+    "prepTime": 20,
+    "bakeTime": 28,
+    "dietaryTags": [
+      "gluten-free",
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "dark chocolate",
+        "quantity": 200,
+        "unit": "g"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 4,
+        "unit": "count"
+      },
+      {
+        "name": "cocoa powder",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 0.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a cake pan.",
+      "Melt dark chocolate with butter and let it cool slightly.",
+      "Whisk eggs with sugar and vanilla until thick, then fold in cocoa, baking powder, and salt.",
+      "Fold in the melted chocolate mixture, pour into the pan, and bake about 28 minutes; chill before serving."
+    ]
+  },
+  {
+    "recipeID": 24,
+    "name": "Lemon Drizzle Cake",
+    "description": "Light loaf cake finished with a tart lemon glaze.",
+    "servings": 10,
+    "prepTime": 20,
+    "bakeTime": 45,
+    "dietaryTags": [
+      "vegetarian"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.75,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "milk",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "lemons",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 1.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and grease a loaf pan.",
+      "Cream butter and sugar, then beat in eggs, vanilla, lemon zest, and juice from the lemons.",
+      "Whisk flour, baking powder, and salt, then fold into the butter mixture alternately with milk.",
+      "Bake about 45 minutes until a tester comes out clean; cool before slicing."
+    ]
+  },
+  {
+    "recipeID": 25,
+    "name": "Vegan Coconut Cake",
+    "description": "Tender coconut cake with plant-based ingredients.",
+    "servings": 12,
+    "prepTime": 25,
+    "bakeTime": 32,
+    "dietaryTags": [
+      "vegan",
+      "dairy-free",
+      "egg-free"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "coconut oil",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "coconut cream",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "unsweetened applesauce",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "shredded coconut",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and grease a cake pan.",
+      "Whisk flour, baking powder, and salt.",
+      "Stir sugar, coconut oil, coconut cream, applesauce, and vanilla until smooth; fold in the dry ingredients and shredded coconut.",
+      "Bake 30 to 32 minutes until golden and springy."
+    ]
+  },
+  {
+    "recipeID": 26,
+    "name": "French Macarons",
+    "description": "Delicate almond meringue cookies with smooth shells and a crisp-chewy center.",
+    "servings": 24,
+    "prepTime": 45,
+    "bakeTime": 16,
+    "dietaryTags": [
+      "gluten-free",
+      "vegetarian",
+      "dessert",
+      "cookies"
+    ],
+    "ingredients": [
+      {
+        "name": "almond flour",
+        "quantity": 1.25,
+        "unit": "cup"
+      },
+      {
+        "name": "powdered sugar",
+        "quantity": 2.75,
+        "unit": "cup"
+      },
+      {
+        "name": "egg whites",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "cream of tartar",
+        "quantity": 0.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.125,
+        "unit": "tsp"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      }
+    ],
+    "instructions": [
+      "Sift almond flour with 1 3/4 cups powdered sugar and salt.",
+      "Whip egg whites with cream of tartar to foamy peaks, gradually add granulated sugar, then whip to stiff peaks and mix in vanilla.",
+      "Fold in the almond mixture, pipe rounds, rest until dry to the touch, and bake at 300 F for 14 to 16 minutes.",
+      "Beat butter with the remaining powdered sugar for filling, cool the shells, and sandwich them with the butter filling."
+    ]
+  },
+  {
+    "recipeID": 27,
+    "name": "Classic Baked Cheesecake",
+    "description": "Creamy vanilla cheesecake on a buttery graham cracker crust.",
+    "servings": 12,
+    "prepTime": 25,
+    "bakeTime": 60,
+    "dietaryTags": [
+      "vegetarian",
+      "dessert",
+      "cake"
+    ],
+    "ingredients": [
+      {
+        "name": "graham cracker crumbs",
+        "quantity": 2,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "cream cheese",
+        "quantity": 24,
+        "unit": "oz"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "sour cream",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "lemon juice",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F; mix graham cracker crumbs with melted butter and press into a springform pan.",
+      "Beat cream cheese with sugar and salt until smooth, then mix in eggs one at a time.",
+      "Stir in sour cream, vanilla, and lemon juice; pour filling over the crust.",
+      "Bake at 325 F until just set, cool gradually, and chill at least 4 hours."
+    ]
+  },
+  {
+    "recipeID": 28,
+    "name": "Soft Cinnamon Rolls",
+    "description": "Pillowy yeast rolls filled with cinnamon sugar and finished with vanilla glaze.",
+    "servings": 12,
+    "prepTime": 35,
+    "bakeTime": 25,
+    "dietaryTags": [
+      "vegetarian",
+      "breakfast",
+      "bread"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 4,
+        "unit": "cup"
+      },
+      {
+        "name": "warm milk",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "active dry yeast",
+        "quantity": 2.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "powdered sugar",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "water",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "egg",
+        "quantity": 1,
+        "unit": "count"
+      },
+      {
+        "name": "brown sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "ground cinnamon",
+        "quantity": 1.5,
+        "unit": "tbsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 1,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Bloom yeast in warm milk with a teaspoon of granulated sugar.",
+      "Mix flour, remaining granulated sugar, salt, egg, and softened butter with the yeast mixture; knead and let rise until doubled.",
+      "Roll out the dough, spread with more softened butter, and sprinkle with brown sugar and cinnamon.",
+      "Roll, slice, and proof until puffy; bake at 350 F for 20 to 25 minutes.",
+      "Whisk powdered sugar, vanilla, and water into a glaze and drizzle over the warm rolls."
+    ]
+  },
+  {
+    "recipeID": 29,
+    "name": "Buttermilk Scones",
+    "description": "Tender, flaky breakfast scones with lightly crisp tops.",
+    "servings": 8,
+    "prepTime": 18,
+    "bakeTime": 18,
+    "dietaryTags": [
+      "vegetarian",
+      "breakfast",
+      "pastry"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2.25,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.33,
+        "unit": "cup"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "cold butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "buttermilk",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "egg",
+        "quantity": 1,
+        "unit": "count"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 400 F and line a baking sheet.",
+      "Whisk flour, sugar, baking powder, and salt.",
+      "Cut in cold butter until pea-sized, then stir in buttermilk, egg, and vanilla just until a dough forms.",
+      "Shape into a round, cut into wedges, and bake 16 to 18 minutes until golden."
+    ]
+  },
+  {
+    "recipeID": 30,
+    "name": "Classic Sugar Cookies",
+    "description": "Buttery sugar cookies that hold their shape and decorate beautifully.",
+    "servings": 30,
+    "prepTime": 25,
+    "bakeTime": 10,
+    "dietaryTags": [
+      "vegetarian",
+      "dessert",
+      "cookies"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 3,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "egg",
+        "quantity": 1,
+        "unit": "count"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "milk",
+        "quantity": 2,
+        "unit": "tbsp"
+      }
+    ],
+    "instructions": [
+      "Cream butter and sugar until pale and fluffy.",
+      "Beat in egg, vanilla, and milk.",
+      "Whisk flour, baking powder, and salt, then mix into the butter mixture; chill the dough for 30 minutes.",
+      "Roll and cut shapes, then bake at 350 F for 8 to 10 minutes until edges are set."
+    ]
+  },
+  {
+    "recipeID": 31,
+    "name": "Classic Apple Pie",
+    "description": "Flaky double crust filled with cinnamon-spiced apples.",
+    "servings": 8,
+    "prepTime": 35,
+    "bakeTime": 55,
+    "dietaryTags": [
+      "vegetarian",
+      "dessert",
+      "pie"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 2.5,
+        "unit": "cup"
+      },
+      {
+        "name": "cold butter",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "cold water",
+        "quantity": 6,
+        "unit": "tbsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "apples",
+        "quantity": 6,
+        "unit": "count"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "ground cinnamon",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "lemon juice",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "cornstarch",
+        "quantity": 2,
+        "unit": "tbsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 425 F. Cut cold butter into flour and salt, add cold water until the pastry holds together, divide, and chill.",
+      "Slice apples and toss with sugar, cinnamon, lemon juice, and cornstarch.",
+      "Roll one pastry portion into a pie plate, add the apple filling, cover with the second pastry portion, and seal the edges.",
+      "Vent the top and bake 20 minutes, then reduce heat to 375 F and bake about 35 minutes until bubbling; cool before slicing."
+    ]
+  },
+  {
+    "recipeID": 32,
+    "name": "Vanilla Cupcakes",
+    "description": "Light vanilla cupcakes topped with a simple buttercream frosting.",
+    "servings": 12,
+    "prepTime": 20,
+    "bakeTime": 20,
+    "dietaryTags": [
+      "vegetarian",
+      "dessert",
+      "cake"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "milk",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 1.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a 12-cup muffin pan.",
+      "Whisk flour, baking powder, and salt.",
+      "Cream butter and sugar, beat in eggs and vanilla, then add the flour mixture alternately with milk.",
+      "Divide batter among cups and bake 18 to 20 minutes; cool before frosting."
+    ]
+  },
+  {
+    "recipeID": 33,
+    "name": "Butter Croissants",
+    "description": "Laminated French pastries with crisp golden layers and a tender center.",
+    "servings": 12,
+    "prepTime": 90,
+    "bakeTime": 20,
+    "dietaryTags": [
+      "vegetarian",
+      "breakfast",
+      "pastry"
+    ],
+    "ingredients": [
+      {
+        "name": "bread flour",
+        "quantity": 4,
+        "unit": "cup"
+      },
+      {
+        "name": "cold butter",
+        "quantity": 1.25,
+        "unit": "cup"
+      },
+      {
+        "name": "warm milk",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "active dry yeast",
+        "quantity": 2.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "salt",
+        "quantity": 1.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "water",
+        "quantity": 2,
+        "unit": "tbsp"
+      }
+    ],
+    "instructions": [
+      "Dissolve yeast and a little sugar in warm milk; mix with bread flour, remaining sugar, salt, and water into a dough and chill.",
+      "Enclose the cold butter in the dough, then roll and fold it in three turns, chilling between each turn.",
+      "Roll out, cut into triangles, shape into crescents, and proof until puffy.",
+      "Bake at 400 F for about 20 minutes until deeply golden."
+    ]
+  },
+  {
+    "recipeID": 34,
+    "name": "Banana Muffins",
+    "description": "Moist, tender muffins made with ripe bananas and a hint of cinnamon.",
+    "servings": 12,
+    "prepTime": 15,
+    "bakeTime": 22,
+    "dietaryTags": [
+      "vegetarian",
+      "breakfast",
+      "muffins"
+    ],
+    "ingredients": [
+      {
+        "name": "ripe bananas",
+        "quantity": 3,
+        "unit": "count"
+      },
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.75,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.33,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "ground cinnamon",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "baking soda",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 1,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a muffin pan.",
+      "Mash bananas and stir in melted butter, sugar, eggs, and vanilla.",
+      "Whisk flour, cinnamon, baking soda, and salt, then fold into the banana mixture.",
+      "Divide among 12 cups and bake 20 to 22 minutes."
+    ]
+  },
+  {
+    "recipeID": 35,
+    "name": "Skillet Cornbread",
+    "description": "Golden, tender cornbread with crisp buttery edges.",
+    "servings": 9,
+    "prepTime": 12,
+    "bakeTime": 22,
+    "dietaryTags": [
+      "vegetarian",
+      "bread",
+      "side dish"
+    ],
+    "ingredients": [
+      {
+        "name": "yellow cornmeal",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "all-purpose flour",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "buttermilk",
+        "quantity": 1,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 2,
+        "unit": "count"
+      },
+      {
+        "name": "melted butter",
+        "quantity": 0.25,
+        "unit": "cup"
+      },
+      {
+        "name": "honey",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 1.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.75,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 400 F and warm a greased cast-iron skillet.",
+      "Whisk cornmeal, flour, baking powder, and salt.",
+      "Whisk buttermilk with eggs, melted butter, and honey, then fold into the dry ingredients.",
+      "Pour batter into the hot skillet and bake 20 to 22 minutes until golden."
+    ]
+  },
+  {
+    "recipeID": 36,
+    "name": "Fluffy Buttermilk Pancakes",
+    "description": "Soft breakfast pancakes with crisp edges and a light, airy crumb.",
+    "servings": 4,
+    "prepTime": 10,
+    "bakeTime": 15,
+    "dietaryTags": [
+      "vegetarian",
+      "breakfast"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "buttermilk",
+        "quantity": 1.25,
+        "unit": "cup"
+      },
+      {
+        "name": "egg",
+        "quantity": 1,
+        "unit": "count"
+      },
+      {
+        "name": "melted butter",
+        "quantity": 3,
+        "unit": "tbsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 2,
+        "unit": "tsp"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 2,
+        "unit": "tbsp"
+      },
+      {
+        "name": "vanilla extract",
+        "quantity": 0.5,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.5,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Whisk flour, baking powder, sugar, and salt.",
+      "Whisk buttermilk with egg, melted butter, and vanilla, then stir into the dry ingredients until just combined.",
+      "Rest the batter for 5 minutes while a lightly greased griddle heats over medium heat.",
+      "Cook pancakes until bubbles form, flip, and cook the second side until golden."
+    ]
+  },
+  {
+    "recipeID": 37,
+    "name": "Tangy Lemon Bars",
+    "description": "Bright lemon curd baked over a buttery shortbread crust and dusted with sugar.",
+    "servings": 16,
+    "prepTime": 20,
+    "bakeTime": 40,
+    "dietaryTags": [
+      "vegetarian",
+      "dessert",
+      "bars"
+    ],
+    "ingredients": [
+      {
+        "name": "all-purpose flour",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "butter",
+        "quantity": 0.75,
+        "unit": "cup"
+      },
+      {
+        "name": "powdered sugar",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "granulated sugar",
+        "quantity": 1.5,
+        "unit": "cup"
+      },
+      {
+        "name": "eggs",
+        "quantity": 4,
+        "unit": "count"
+      },
+      {
+        "name": "lemon juice",
+        "quantity": 0.5,
+        "unit": "cup"
+      },
+      {
+        "name": "lemon zest",
+        "quantity": 1,
+        "unit": "tbsp"
+      },
+      {
+        "name": "baking powder",
+        "quantity": 0.25,
+        "unit": "tsp"
+      },
+      {
+        "name": "salt",
+        "quantity": 0.25,
+        "unit": "tsp"
+      }
+    ],
+    "instructions": [
+      "Heat the oven to 350 F and line a square pan.",
+      "Mix flour, butter, powdered sugar, and salt; press into the pan and bake for 18 to 20 minutes.",
+      "Whisk granulated sugar, eggs, lemon juice, lemon zest, and baking powder until smooth.",
+      "Pour filling over the warm crust and bake 20 to 25 minutes until just set; cool and chill before cutting."
+    ]
+  }
 ]

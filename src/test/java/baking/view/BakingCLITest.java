@@ -94,7 +94,7 @@ class BakingCLITest {
         String result = output.toString();
         assertTrue(result.contains("[1]"));
         assertTrue(result.contains("Classic Chocolate Chip Cookies"));
-        assertTrue(result.contains("(1 more matches not shown)"));
+        assertTrue(result.matches("(?s).*\\(\\d+ more matches not shown\\).*"));
         assertEquals(5, result.split("\\[\\d+\\]").length - 1);
     }
 
