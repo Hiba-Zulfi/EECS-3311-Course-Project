@@ -6,6 +6,9 @@ import baking.llm.LLMClient;
 import baking.llm.LLMConfig;
 import baking.llm.LLMException;
 import baking.view.BakingCLI;
+import baking.view.BakingGUI;
+
+import javax.swing.SwingUtilities;
 
 public final class Main {
     private Main() {
@@ -23,7 +26,12 @@ public final class Main {
             return;
         }
         if ("--gui".equals(option)) {
-            System.out.println("The GUI is reserved for a future release.");
+            try {
+                AgentController controller = AppFactory.createController();
+                SwingUtilities.invokeLater(() -> new BakingGUI(controller).start());
+            } catch (IllegalStateException e) {
+                System.err.println("Unable to start Baking Agent: " + e.getMessage());
+            }
             return;
         }
         if (!"--cli".equals(option)) {
