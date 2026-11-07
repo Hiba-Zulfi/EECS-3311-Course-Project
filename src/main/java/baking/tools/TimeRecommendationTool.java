@@ -24,7 +24,7 @@ public class TimeRecommendationTool implements AgentTool {
     @Override
     public String execute(String input) {
         if (input == null || input.isBlank()) throw new IllegalArgumentException("request must not be blank");
-        int minutes = availableTime(input);
+        int minutes = parseAvailableTime(input);
         if (minutes <= 0) throw new IllegalArgumentException("The request must include a positive available time in minutes.");
         List<Recipe> sourceRecipes = recipesFromSearchOutput(input);
         List<Recipe> recommendations = recommendRecipes(sourceRecipes, minutes);
@@ -43,8 +43,7 @@ public class TimeRecommendationTool implements AgentTool {
         List<Recipe> fitting = filterByTime(recipes, availableTime);
         boolean fallback = fitting.isEmpty();
         List<Recipe> candidates = fallback
-                ? recipes.stream().sorted((a, b) -> Integer.compare(
-                        Math.abs(a.getTotalTime() - availableTime), Math.abs(b.getTotalTime() - availableTime)))
+                ? recipes.stream().sorted((a, b) -> Integer.compare(a.getTotalTime(), b.getTotalTime()))
                     .limit(Math.min(3, recipes.size())).toList()
                 : fitting;
         if (candidates.isEmpty()) {
@@ -56,7 +55,7 @@ public class TimeRecommendationTool implements AgentTool {
                 "time recommendation ranking");
         List<Recipe> ranked = rankRecipes(candidates, rankedNames);
         lastExplanation = fallback
-                ? "No recipe fits within " + availableTime + " minutes. These are the closest-time options, ranked for your request:"
+                ? "No recipe fits within " + availableTime + " minutes. Here are the shortest recipes, ranked for your request:"
                 : "Recipes that fit within " + availableTime + " minutes, ranked for your request:";
         lastRecommendations = ranked;
         return ranked;
@@ -96,9 +95,20 @@ public class TimeRecommendationTool implements AgentTool {
         return List.copyOf(ranked);
     }
 
-    private static int availableTime(String input) {
+    public static int parseAvailableTime(String input) {
+        if (input == null || input.isBlank()) return 0;
+        String normalized = input.toLowerCase(Locale.ROOT).replace('-', ' ')
+                .replaceAll("\\s+", " ").trim();
+        if (normalized.matches(".*\\b(?:an|a|one|1) hour and (?:a )?half\\b.*")) return 90;
+        java.util.regex.Matcher hourMatcher = java.util.regex.Pattern
+                .compile("(?i)(\\d+(?:\\.\\d+)?)\\s*(?:hours?|hrs?)\\b").matcher(normalized);
+        if (hourMatcher.find()) {
+            try { return (int) Math.round(Double.parseDouble(hourMatcher.group(1)) * 60); }
+            catch (NumberFormatException ignored) { return 0; }
+        }
+        if (normalized.matches(".*\\b(?:an|a|one) hour\\b.*")) return 60;
         java.util.regex.Matcher matcher = java.util.regex.Pattern
-                .compile("(?i)(\\d+)\\s*(?:minutes?|mins?)\\b").matcher(input);
+                .compile("(?i)(\\d+)\\s*(?:minutes?|mins?)\\b").matcher(normalized);
         if (matcher.find()) {
             try { return Integer.parseInt(matcher.group(1)); }
             catch (NumberFormatException ignored) { return 0; }

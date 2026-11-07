@@ -23,7 +23,8 @@ public class RecipeSearchTool implements AgentTool {
             "make", "bake", "baking", "cook", "cooking", "please", "find", "search", "recipe", "recipes",
             "give", "show", "get", "to", "of", "and", "or", "with", "in", "on", "at", "from", "that",
             "this", "it", "is", "are", "can", "could", "about", "really", "actually", "just", "very",
-            "all", "have", "has", "had", "do", "does", "did", "will", "here", "there", "much");
+            "all", "have", "has", "had", "do", "does", "did", "will", "here", "there", "much",
+            "only", "minute", "minutes", "min", "mins", "hour", "hours", "hr", "hrs", "half");
     private static final Pattern WORD = Pattern.compile("[\\p{L}]+(?:'[\\p{L}]+)?");
 
     public RecipeSearchTool(RecipeRepository repository, LLMClient llmClient) {
@@ -88,6 +89,11 @@ public class RecipeSearchTool implements AgentTool {
     }
 
     public List<Recipe> getLastSearchResults() { return List.copyOf(lastSearchResults); }
+    public List<Recipe> getAllRecipes() { return repository.getAllRecipes(); }
+
+    public static boolean hasSearchKeywords(String input) {
+        return input != null && !keywords(input).isEmpty();
+    }
 
     public String interpretRequest(String input) {
         return "Search criteria: " + keywords(input);

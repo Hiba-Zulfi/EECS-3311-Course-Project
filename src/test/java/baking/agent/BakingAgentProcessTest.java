@@ -10,6 +10,7 @@ import baking.model.UserPreferences;
 import baking.service.IngredientManager;
 import baking.service.RecipeRepository;
 import baking.tools.ToolManager;
+import baking.tools.TimeRecommendationTool;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -64,6 +65,55 @@ class BakingAgentProcessTest {
         assertFalse(memory.getLastSearchResults().isEmpty());
         assertNotNull(memory.getCurrentRecipe());
         assertEquals(memory.getCurrentRecipe(), memory.getLastSearchResults().getFirst());
+    }
+
+    @Test
+    void timeOnlyRequestUsesCatalogAndParsesMinutesWithoutIntentCall() {
+        MockLLMProvider provider = new MockLLMProvider("[\"Classic Chocolate Chip Cookies\",\"Oatmeal Raisin Cookies\"]");
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+
+        String result = agent.processRequest(request("I only have 45 minutes"));
+
+        assertTrue(result.contains("Recipes that fit within 45 minutes"));
+        assertTrue(result.contains("[1] Classic Chocolate Chip Cookies"));
+        assertEquals(1, provider.getPrompts().size());
+        assertTrue(provider.getPrompts().getFirst().contains("Rank these baking options"));
+    }
+
+    @Test
+    void timeOnlyRequestReusesLastSearchResultsAndSupportsHourExpressions() {
+        MockLLMProvider provider = new MockLLMProvider("[\"Fast Lemon Cookies\"]");
+        AgentMemory memory = new AgentMemory();
+        Recipe previousResult = new Recipe(90, "Fast Lemon Cookies", "Quick lemon cookies", 4, 5, 5,
+                List.of(new Ingredient("flour", 1, "cup")), List.of("Bake"));
+        memory.setLastSearchResults(List.of(previousResult));
+        BakingAgent agent = agent(provider, memory, new UserPreferences());
+
+        String result = agent.processRequest(request("an hour and a half"));
+
+        assertTrue(result.contains("[90] Fast Lemon Cookies"));
+        assertTrue(provider.getPrompts().getFirst().contains("Fast Lemon Cookies"));
+        assertEquals(90, TimeRecommendationTool.parseAvailableTime("an hour and a half"));
+        assertEquals(90, TimeRecommendationTool.parseAvailableTime("1 hour and a half"));
+        assertEquals(60, TimeRecommendationTool.parseAvailableTime("1 hour"));
+        assertEquals(45, TimeRecommendationTool.parseAvailableTime("45 minutes"));
+        assertEquals(1, provider.getPrompts().size());
+    }
+
+    @Test
+    void noRecipeFitsReturnsTheShortestOptions() {
+        MockLLMProvider provider = new MockLLMProvider("[]");
+        TimeRecommendationTool tool = new TimeRecommendationTool(new RecipeRepository(), new LLMClient(provider));
+        List<Recipe> candidates = List.of(
+                new Recipe(80, "Long Bake", "", 4, 50, 40, List.of(), List.of()),
+                new Recipe(81, "Short Bake", "", 4, 5, 10, List.of(), List.of()),
+                new Recipe(82, "Middle Bake", "", 4, 20, 20, List.of(), List.of()));
+
+        List<Recipe> result = tool.recommendRecipes(candidates, 1);
+
+        assertEquals(List.of(81, 82, 80), result.stream().map(Recipe::getRecipeID).toList());
+        assertTrue(tool.getLastExplanation().contains("shortest recipes"));
+        assertEquals(1, provider.getPrompts().size());
     }
 
     @Test

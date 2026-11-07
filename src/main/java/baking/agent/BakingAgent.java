@@ -76,7 +76,11 @@ public class BakingAgent {
                 request = new BakingRequest(input, request.getDesiredServings(), request.getAvailableTime(),
                         request.getAvailableIngredients(), request.getDietaryRestrictions(), request.getTastePreference());
             }
-            Map<String, Object> analysis = llmClient.analyzeRequest(input, currentStep);
+            int timeOnlyMinutes = TimeRecommendationTool.parseAvailableTime(input);
+            boolean timeOnlyRequest = timeOnlyMinutes > 0 && !RecipeSearchTool.hasSearchKeywords(input);
+            Map<String, Object> analysis = timeOnlyRequest
+                    ? Map.of("intent", "time-based recommendation", "availableTime", timeOnlyMinutes)
+                    : llmClient.analyzeRequest(input, currentStep);
             String intent = classifyIntent(input, analysis);
             if (UNCLEAR.equals(intent)) {
                 if (staged.getClarificationCount() >= 2) intent = "baking request";
@@ -186,7 +190,14 @@ public class BakingAgent {
             return "Please tell me how many minutes you have so I can recommend recipes that fit.";
         }
         RecipeSearchTool searchTool = (RecipeSearchTool) selectTool("recipe search");
-        List<Recipe> matches = searchTool.searchRecipes(request.getRequestText(), request.getDietaryRestrictions(), 0);
+        List<Recipe> matches;
+        if (RecipeSearchTool.hasSearchKeywords(request.getRequestText())) {
+            matches = searchTool.searchRecipes(request.getRequestText(), request.getDietaryRestrictions(), 0);
+        } else if (!staged.getLastSearchResults().isEmpty()) {
+            matches = staged.getLastSearchResults();
+        } else {
+            matches = searchTool.getAllRecipes();
+        }
         staged.setLastSearchResults(matches);
         TimeRecommendationTool recommendationTool = (TimeRecommendationTool) selectTool("time-based recommendation");
         List<Recipe> ranked = recommendationTool.recommendRecipes(matches, request.getAvailableTime());
