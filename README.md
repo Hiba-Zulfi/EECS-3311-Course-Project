@@ -42,13 +42,15 @@ The CLI sends plain language baking, recipe search, timing, substitution, taste,
 /favourites
 ```
 
-`/ingredients` accepts semicolon separated items in `Name:quantity unit` format. `/select` selects a recipe by catalog ID; `/check`, `/scale`, and `/shopping` use that selection. Use `/favourite remove` to remove the selected recipe. `/quit` exits. Input and parsing errors are printed without terminating the CLI.
+`/ingredients` accepts comma- or semicolon-separated items in `Name:quantity unit` format. `/select` selects a recipe by catalog ID; `/check`, `/scale`, and `/shopping` use that selection. Use `/favourite remove` to remove the selected recipe. `/quit` exits. Input and parsing errors are printed without terminating the CLI.
 
-The GUI launch option is reserved for a later release:
+Launch the Swing interface with:
 
 ```text
 mvn exec:java "-Dexec.args=--gui"
 ```
+
+The GUI provides asynchronous agent requests, recipe selection, ingredient availability checks, scaling, shopping lists, favourites, substitutions, taste customization, and troubleshooting. Select a recipe from the list to use it with the deterministic recipe actions. Add pantry items in comma-separated `Name:quantity unit` form (for example, `Flour:2 cups, egg:2`).
 
 To send the real Gemini model a small connectivity prompt and print its reply, run:
 

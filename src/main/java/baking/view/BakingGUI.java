@@ -119,6 +119,14 @@ public final class BakingGUI {
         favourites.addActionListener(event -> runAction(this::viewFavourites));
         JButton addIngredients = new JButton("Add / Update Ingredients");
         addIngredients.addActionListener(event -> runAction(this::updateIngredients));
+        specialistField.setColumns(14);
+        specialistField.setToolTipText("Ingredient, taste preference, or baking problem");
+        JButton substitute = new JButton("Find Substitute");
+        substitute.addActionListener(event -> runAction(this::findSubstitute));
+        JButton taste = new JButton("Customize Taste");
+        taste.addActionListener(event -> runAction(this::customizeTaste));
+        JButton troubleshoot = new JButton("Troubleshoot");
+        troubleshoot.addActionListener(event -> runAction(this::troubleshoot));
         actions.add(addIngredients);
         actions.add(check);
         actions.add(new JLabel("Servings:"));
@@ -129,6 +137,13 @@ public final class BakingGUI {
         actions.add(favourites);
         controls.add(ingredients);
         controls.add(actions);
+        JPanel specialistActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        specialistActions.add(new JLabel("Specialist request:"));
+        specialistActions.add(specialistField);
+        specialistActions.add(substitute);
+        specialistActions.add(taste);
+        specialistActions.add(troubleshoot);
+        controls.add(specialistActions);
         return controls;
     }
 
@@ -172,6 +187,29 @@ public final class BakingGUI {
         resultsArea.setText(favourites.isEmpty() ? "You have no favourite recipes."
                 : favourites.stream().map(recipe -> "[" + recipe.getRecipeID() + "] " + recipe.getName())
                         .reduce((a, b) -> a + "\n" + b).orElse(""));
+    }
+
+    private void findSubstitute() {
+        String ingredient = specialistField.getText().trim();
+        if (ingredient.isEmpty()) throw new IllegalArgumentException("Enter an ingredient to replace.");
+        Recipe recipe = selectedRecipe;
+        String context = recipe == null ? "" : " in " + recipe.getName();
+        processAgentRequest("What can I use instead of " + ingredient + context + "?");
+    }
+
+    private void customizeTaste() {
+        String preference = specialistField.getText().trim();
+        if (preference.isEmpty()) throw new IllegalArgumentException("Enter a taste preference, such as less sweet.");
+        Recipe recipe = requireSelectedRecipe();
+        processAgentRequest("Customize the taste of " + recipe.getName() + " to be " + preference + ".");
+    }
+
+    private void troubleshoot() {
+        String problem = specialistField.getText().trim();
+        if (problem.isEmpty()) throw new IllegalArgumentException("Describe the baking problem to troubleshoot.");
+        Recipe recipe = selectedRecipe;
+        processAgentRequest(recipe == null ? "Troubleshoot this baking problem: " + problem
+                : "Troubleshoot this problem with " + recipe.getName() + ": " + problem);
     }
 
     private void runAction(Runnable action) {
@@ -246,14 +284,18 @@ public final class BakingGUI {
     }
 
     private void submitRequest() {
-        String requestText = requestField.getText().trim();
+        processAgentRequest(requestField.getText().trim());
+    }
+
+    private void processAgentRequest(String requestText) {
         if (requestText.isEmpty()) { showError("Enter a baking request first."); return; }
         submitButton.setEnabled(false);
         statusLine.setText("Thinking...");
+        List<Ingredient> ingredientsSnapshot = List.copyOf(availableIngredients);
         new SwingWorker<String, Void>() {
             @Override protected String doInBackground() {
                 return controller.processRequest(new BakingRequest(requestText, 0, 0,
-                        List.copyOf(availableIngredients), List.of(), ""));
+                        ingredientsSnapshot, List.of(), ""));
             }
             @Override protected void done() {
                 submitButton.setEnabled(true);
@@ -263,6 +305,7 @@ public final class BakingGUI {
                     statusLine.setText("Ready");
                 } catch (Exception error) {
                     showError(messageFor(error));
+                    statusLine.setText("Ready");
                 }
             }
         }.execute();
