@@ -10,6 +10,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -60,6 +61,17 @@ public final class BakingGUI {
     private final JButton shoppingButton = new JButton("Make shopping list");
     private final JButton saveFavouriteButton = new JButton("Save to favourites");
 
+    private final DefaultListModel<Recipe> favouritesModel = new DefaultListModel<>();
+    private final JList<Recipe> favouritesList = recipeList(favouritesModel);
+    private final JLabel emptyFavouritesMessage = new JLabel("No saved favourites yet.");
+    private final JPanel aiHelpPanel = new JPanel(new BorderLayout(8, 8));
+    private final JComboBox<Ingredient> substituteIngredient = new JComboBox<>();
+    private final JTextField tasteField = new JTextField();
+    private final JTextArea problemField = new JTextArea(4, 30);
+    private final JTextField clarificationField = new JTextField();
+    private final JTextArea aiResults = resultArea();
+    private final JLabel aiInputError = new JLabel(" ");
+
     private Recipe selectedRecipe;
 
     public BakingGUI(AgentController controller) {
@@ -82,6 +94,8 @@ public final class BakingGUI {
 
         tabs.addTab("Find Recipes", buildFindRecipesTab());
         tabs.addTab("Recipe Tools", buildRecipeToolsTab());
+        tabs.addTab("Favourites", buildFavouritesTab());
+        tabs.addTab("AI Help", buildAIHelpTab());
         root.add(tabs, BorderLayout.CENTER);
         statusLine.setBorder(BorderFactory.createEmptyBorder(4, 2, 0, 2));
         root.add(statusLine, BorderLayout.SOUTH);
@@ -97,7 +111,11 @@ public final class BakingGUI {
         });
         refreshRecipeList(controller.getRecipes());
         setRecipeToolsEnabled(false);
+        setAIHelpEnabled(false);
         applyReadableFonts(frame.getContentPane());
+        tabs.addChangeListener(event -> {
+            if (tabs.getSelectedIndex() == 2) refreshFavourites();
+        });
     }
 
     private JPanel buildFindRecipesTab() {
@@ -149,6 +167,92 @@ public final class BakingGUI {
         return recipeToolsPanel;
     }
 
+    private JPanel buildFavouritesTab() {
+        JPanel panel = tabPanel();
+        panel.add(instruction("Your saved recipes are here. Choose one explicitly to work with it."), BorderLayout.NORTH);
+        JPanel listPanel = new JPanel(new BorderLayout(6, 6));
+        listPanel.add(emptyFavouritesMessage, BorderLayout.NORTH);
+        listPanel.add(new JScrollPane(favouritesList), BorderLayout.CENTER);
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        JButton use = new JButton("Use this recipe");
+        use.addActionListener(event -> useFavourite());
+        JButton remove = new JButton("Remove");
+        remove.addActionListener(event -> removeFavourite());
+        actions.add(use);
+        actions.add(remove);
+        listPanel.add(actions, BorderLayout.SOUTH);
+        panel.add(listPanel, BorderLayout.CENTER);
+        refreshFavourites();
+        return panel;
+    }
+
+    private JPanel buildAIHelpTab() {
+        aiHelpPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        aiHelpPanel.add(instruction("Ask for recipe-specific advice. You can answer a clarification below."), BorderLayout.NORTH);
+        JPanel actions = new JPanel(new GridLayout(0, 1, 8, 8));
+
+        JPanel substituteGroup = titledGroup("Find a substitute");
+        JPanel substituteRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        substituteRow.add(new JLabel("Ingredient"));
+        substituteIngredient.setRenderer((list, value, index, selected, focus) -> {
+            JLabel label = new JLabel(value == null ? "" : formatIngredient((Ingredient) value));
+            if (selected) {
+                label.setOpaque(true);
+                label.setBackground(list.getSelectionBackground());
+                label.setForeground(list.getSelectionForeground());
+            }
+            return label;
+        });
+        substituteRow.add(substituteIngredient);
+        JButton substituteButton = new JButton("Find");
+        substituteButton.addActionListener(event -> findSubstitute());
+        substituteRow.add(substituteButton);
+        substituteGroup.add(substituteRow, BorderLayout.CENTER);
+
+        JPanel tasteGroup = titledGroup("Change the taste");
+        JPanel tasteRow = new JPanel(new BorderLayout(8, 0));
+        installPlaceholder(tasteField, "e.g. make it less sweet");
+        tasteRow.add(tasteField, BorderLayout.CENTER);
+        JButton tasteButton = new JButton("Customize");
+        tasteButton.addActionListener(event -> customizeTaste());
+        tasteRow.add(tasteButton, BorderLayout.EAST);
+        tasteGroup.add(tasteRow, BorderLayout.CENTER);
+
+        JPanel problemGroup = titledGroup("Fix a baking problem");
+        problemField.setLineWrap(true);
+        problemField.setWrapStyleWord(true);
+        installPlaceholder(problemField, "e.g. my cookies spread too much");
+        JScrollPane problemScroll = new JScrollPane(problemField);
+        JButton troubleshootButton = new JButton("Troubleshoot");
+        troubleshootButton.addActionListener(event -> troubleshoot());
+        JPanel problemBody = new JPanel(new BorderLayout(8, 0));
+        problemBody.add(problemScroll, BorderLayout.CENTER);
+        problemBody.add(troubleshootButton, BorderLayout.EAST);
+        problemGroup.add(problemBody, BorderLayout.CENTER);
+
+        actions.add(substituteGroup);
+        actions.add(tasteGroup);
+        actions.add(problemGroup);
+        aiInputError.setForeground(new java.awt.Color(170, 35, 35));
+        actions.add(aiInputError);
+        aiResults.setRows(6);
+        JScrollPane resultsScroll = new JScrollPane(aiResults);
+        resultsScroll.setBorder(BorderFactory.createTitledBorder("AI response"));
+
+        JPanel answerRow = new JPanel(new BorderLayout(8, 0));
+        answerRow.add(new JLabel("Answer a clarification:"), BorderLayout.WEST);
+        answerRow.add(clarificationField, BorderLayout.CENTER);
+        JButton sendAnswer = new JButton("Send answer");
+        sendAnswer.addActionListener(event -> answerClarification());
+        answerRow.add(sendAnswer, BorderLayout.EAST);
+        JPanel responsePanel = new JPanel(new BorderLayout(6, 6));
+        responsePanel.add(resultsScroll, BorderLayout.CENTER);
+        responsePanel.add(answerRow, BorderLayout.SOUTH);
+        aiHelpPanel.add(actions, BorderLayout.CENTER);
+        aiHelpPanel.add(responsePanel, BorderLayout.SOUTH);
+        return aiHelpPanel;
+    }
+
     private JPanel buildScaleGroup() {
         JPanel group = titledGroup("Scale recipe");
         JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
@@ -169,7 +273,7 @@ public final class BakingGUI {
         JPanel input = new JPanel(new BorderLayout(5, 5));
         input.add(new JLabel("What you have (e.g. flour:2 cups, egg:3)"), BorderLayout.NORTH);
         input.add(ingredientsField, BorderLayout.CENTER);
-        checkButton.addActionListener(event -> checkWhat'sMissing());
+        checkButton.addActionListener(event -> checkMissingIngredients());
         input.add(checkButton, BorderLayout.EAST);
         group.add(input, BorderLayout.CENTER);
         ingredientsError.setForeground(new java.awt.Color(170, 35, 35));
@@ -226,11 +330,18 @@ public final class BakingGUI {
             findResults.setText("Select a recipe from the list first.");
             return;
         }
+        activateRecipe(recipe);
+    }
+
+    private void activateRecipe(Recipe recipe) {
         selectedRecipe = recipe;
         currentRecipeBanner.setText("Current recipe: " + selectedRecipe.getName());
         statusLine.setText("Now working on: " + selectedRecipe.getName());
         recipeToolsResults.setText("For " + selectedRecipe.getName() + ":");
         setRecipeToolsEnabled(true);
+        setAIHelpEnabled(true);
+        substituteIngredient.removeAllItems();
+        selectedRecipe.getIngredients().forEach(substituteIngredient::addItem);
     }
 
     private void scaleRecipe() {
@@ -242,7 +353,7 @@ public final class BakingGUI {
         showRecipeResult("Scaled to " + servings + " servings: " + formatIngredients(selectedRecipe.getIngredients()));
     }
 
-    private void checkWhat'sMissing() {
+    private void checkMissingIngredients() {
         ingredientsError.setText(" ");
         if (!ingredientsField.getText().isBlank()) {
             try {
@@ -266,6 +377,99 @@ public final class BakingGUI {
                 : "Shopping list: " + formatIngredients(list.getItems()));
     }
 
+    private void saveFavourite() {
+        Recipe recipe = requireSelectedRecipe();
+        recipeToolsResults.setText("For " + recipe.getName() + ":\n" + (controller.addFavourite(recipe)
+                ? "Saved to favourites." : "This recipe is already in your favourites."));
+        refreshFavourites();
+    }
+
+    private void useFavourite() {
+        Recipe recipe = favouritesList.getSelectedValue();
+        if (recipe == null) {
+            emptyFavouritesMessage.setText("Choose a saved recipe first.");
+            return;
+        }
+        activateRecipe(recipe);
+    }
+
+    private void removeFavourite() {
+        Recipe recipe = favouritesList.getSelectedValue();
+        if (recipe == null) {
+            emptyFavouritesMessage.setText("Choose a saved recipe to remove.");
+            return;
+        }
+        controller.removeFavourite(recipe);
+        refreshFavourites();
+        statusLine.setText("Removed " + recipe.getName() + " from favourites.");
+    }
+
+    private void refreshFavourites() {
+        favouritesModel.clear();
+        List<Recipe> saved = controller.getFavourites();
+        saved.forEach(favouritesModel::addElement);
+        emptyFavouritesMessage.setText(saved.isEmpty() ? "No saved favourites yet." : "");
+    }
+
+    private void findSubstitute() {
+        aiInputError.setText(" ");
+        Ingredient ingredient = (Ingredient) substituteIngredient.getSelectedItem();
+        if (ingredient == null) {
+            aiInputError.setText("Choose an ingredient from the selected recipe.");
+            return;
+        }
+        runAIRequest("What can I use instead of " + ingredient.getName() + " in "
+                + requireSelectedRecipe().getName() + "?");
+    }
+
+    private void customizeTaste() {
+        aiInputError.setText(" ");
+        String taste = placeholderValue(tasteField, "e.g. make it less sweet");
+        if (taste.isBlank()) {
+            aiInputError.setText("Describe the taste change you want.");
+            return;
+        }
+        runAIRequest("Customize the taste of " + requireSelectedRecipe().getName() + " to " + taste + ".");
+    }
+
+    private void troubleshoot() {
+        aiInputError.setText(" ");
+        String problem = placeholderValue(problemField, "e.g. my cookies spread too much");
+        if (problem.isBlank()) {
+            aiInputError.setText("Describe the baking problem.");
+            return;
+        }
+        runAIRequest("Troubleshoot this problem with " + requireSelectedRecipe().getName() + ": " + problem);
+    }
+
+    private void answerClarification() {
+        aiInputError.setText(" ");
+        String answer = clarificationField.getText().trim();
+        if (answer.isEmpty()) {
+            aiInputError.setText("Enter an answer to the clarification question.");
+            return;
+        }
+        clarificationField.setText("");
+        runAIRequest(answer);
+    }
+
+    private void runAIRequest(String request) {
+        statusLine.setText("Thinking...");
+        List<Ingredient> pantry = List.copyOf(availableIngredients);
+        setAIHelpEnabled(false);
+        new SwingWorker<String, Void>() {
+            @Override protected String doInBackground() {
+                return controller.processRequest(new BakingRequest(request, 0, 0, pantry, List.of(), ""));
+            }
+            @Override protected void done() {
+                try { aiResults.setText(get()); }
+                catch (Exception error) { aiResults.setText("Unable to complete the request: " + messageFor(error)); }
+                statusLine.setText("Ready");
+                setAIHelpEnabled(selectedRecipe != null);
+            }
+        }.execute();
+    }
+
     private void showRecipeResult(String result) {
         recipeToolsResults.setText("For " + requireSelectedRecipe().getName() + ":\n" + result);
     }
@@ -274,6 +478,12 @@ public final class BakingGUI {
         setEnabledRecursively(recipeToolsPanel, enabled);
         // Keep the explanatory text and result area available for an empty-state message.
         recipeToolsResults.setEnabled(true);
+    }
+
+    private void setAIHelpEnabled(boolean enabled) {
+        setEnabledRecursively(aiHelpPanel, enabled);
+        aiResults.setEnabled(true);
+        if (tabs.getTabCount() > 3) tabs.setEnabledAt(3, enabled);
     }
 
     private static void setEnabledRecursively(Component component, boolean enabled) {
@@ -396,6 +606,45 @@ public final class BakingGUI {
                 + BigDecimal.valueOf(ingredient.getQuantity()).stripTrailingZeros().toPlainString()
                 + (ingredient.getUnit().equalsIgnoreCase("count") ? "" : " " + ingredient.getUnit()))
                 .reduce((left, right) -> left + "; " + right).orElse("");
+    }
+
+    private static String formatIngredient(Ingredient ingredient) {
+        return ingredient.getName() + " " + BigDecimal.valueOf(ingredient.getQuantity()).stripTrailingZeros().toPlainString()
+                + (ingredient.getUnit().equalsIgnoreCase("count") ? "" : " " + ingredient.getUnit());
+    }
+
+    private static void installPlaceholder(JTextField field, String placeholder) {
+        field.setText(placeholder);
+        field.setForeground(java.awt.Color.GRAY);
+        field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override public void focusGained(java.awt.event.FocusEvent event) {
+                if (field.getText().equals(placeholder)) { field.setText(""); field.setForeground(java.awt.Color.BLACK); }
+            }
+            @Override public void focusLost(java.awt.event.FocusEvent event) {
+                if (field.getText().isBlank()) { field.setText(placeholder); field.setForeground(java.awt.Color.GRAY); }
+            }
+        });
+    }
+
+    private static void installPlaceholder(JTextArea area, String placeholder) {
+        area.setText(placeholder);
+        area.setForeground(java.awt.Color.GRAY);
+        area.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override public void focusGained(java.awt.event.FocusEvent event) {
+                if (area.getText().equals(placeholder)) { area.setText(""); area.setForeground(java.awt.Color.BLACK); }
+            }
+            @Override public void focusLost(java.awt.event.FocusEvent event) {
+                if (area.getText().isBlank()) { area.setText(placeholder); area.setForeground(java.awt.Color.GRAY); }
+            }
+        });
+    }
+
+    private static String placeholderValue(JTextField field, String placeholder) {
+        return field.getText().equals(placeholder) ? "" : field.getText().trim();
+    }
+
+    private static String placeholderValue(JTextArea field, String placeholder) {
+        return field.getText().equals(placeholder) ? "" : field.getText().trim();
     }
 
     private void showError(String message) { findResults.setText("Error: " + message); }
