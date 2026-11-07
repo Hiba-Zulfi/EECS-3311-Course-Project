@@ -29,13 +29,25 @@ class GeminiAdapterTest {
     }
 
     @Test
-    void rateLimitHasClearError() throws Exception {
-        withServer(429, "{}", 0, (adapter, server) -> {
+    void quotaFailureIsImmediateAndHasClearMessage() throws Exception {
+        AtomicInteger requests = new AtomicInteger();
+        HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
+        server.createContext("/generate", exchange -> {
+            requests.incrementAndGet();
+            byte[] body = "{}".getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(429, body.length);
+            exchange.getResponseBody().write(body);
+            exchange.close();
+        });
+        server.start();
+        try {
+            GeminiAdapter adapter = adapter(server, Duration.ofSeconds(2), delay -> fail("429 must not retry"));
             LLMException error = assertThrows(LLMException.class, () -> adapter.sendPrompt("hello"));
-            assertTrue(error.getMessage().contains("rate limit"));
+            assertEquals("Daily or per-minute AI quota reached. Try again later.", error.getMessage());
             assertEquals(429, error.getHttpStatus());
             assertEquals(error.getMessage(), adapter.getLastError());
-        });
+            assertEquals(1, requests.get());
+        } finally { server.stop(0); }
     }
 
     @Test
@@ -62,13 +74,13 @@ class GeminiAdapterTest {
     }
 
     @Test
-    void retryAfterHeaderOverridesBackoff() throws Exception {
+    void quotaRetryAfterHeaderDoesNotCauseRetry() throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         AtomicInteger requests = new AtomicInteger();
         server.createContext("/generate", exchange -> {
             int attempt = requests.incrementAndGet();
             if (attempt == 1) exchange.getResponseHeaders().add("Retry-After", "3");
-            int status = attempt == 1 ? 429 : 200;
+            int status = 429;
             byte[] body = (status == 200 ? "{\"candidates\":[{\"content\":{\"parts\":[{\"text\":\"ok\"}]}}]}" : "busy")
                     .getBytes(StandardCharsets.UTF_8);
             exchange.sendResponseHeaders(status, body.length);
@@ -79,8 +91,10 @@ class GeminiAdapterTest {
         try {
             List<Duration> delays = new ArrayList<>();
             GeminiAdapter adapter = adapter(server, Duration.ofSeconds(2), delays::add);
-            assertEquals("ok", adapter.sendPrompt("hello"));
-            assertEquals(List.of(Duration.ofSeconds(3)), delays);
+            LLMException error = assertThrows(LLMException.class, () -> adapter.sendPrompt("hello"));
+            assertEquals("Daily or per-minute AI quota reached. Try again later.", error.getMessage());
+            assertEquals(1, requests.get());
+            assertTrue(delays.isEmpty());
         } finally { server.stop(0); }
     }
 

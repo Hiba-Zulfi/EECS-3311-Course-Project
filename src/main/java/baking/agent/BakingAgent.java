@@ -71,13 +71,36 @@ public class BakingAgent {
         String currentStep = "intent and requirement analysis";
         try {
             String input = request.getRequestText();
-            if (staged.getPendingClarificationRequest() != null) {
+            boolean answeringClarification = staged.getPendingClarificationRequest() != null;
+            if (answeringClarification) {
                 input = staged.getPendingClarificationRequest() + "\nClarification answer: " + input;
                 request = new BakingRequest(input, request.getDesiredServings(), request.getAvailableTime(),
                         request.getAvailableIngredients(), request.getDietaryRestrictions(), request.getTastePreference());
             }
             int timeOnlyMinutes = TimeRecommendationTool.parseAvailableTime(input);
             boolean timeOnlyRequest = timeOnlyMinutes > 0 && !RecipeSearchTool.hasSearchKeywords(input);
+            RecipeSearchTool fastSearchTool = null;
+            if (!answeringClarification && RecipeSearchTool.isSimpleSearchQuery(input)) {
+                try { fastSearchTool = (RecipeSearchTool) selectTool("recipe search"); }
+                catch (IllegalArgumentException ignored) { /* Minimal test and custom agents can omit search. */ }
+            }
+            if (fastSearchTool != null && fastSearchTool.isRecipeNameKeyword(input)) {
+                staged.clearPendingClarification();
+                BakingRequest fastRequest = new BakingRequest(input, request.getDesiredServings(),
+                        request.getAvailableTime(), request.getAvailableIngredients(),
+                        request.getDietaryRestrictions(), request.getTastePreference());
+                fastRequest = applyPreferences(fastRequest, fastRequest);
+                staged.setLastBakingRequest(fastRequest);
+                List<Recipe> matches = fastSearchTool.searchRecipes(input, fastRequest.getDietaryRestrictions(),
+                        fastRequest.getAvailableTime());
+                staged.setLastSearchResults(matches);
+                if (!matches.isEmpty()) staged.setCurrentRecipe(matches.getFirst());
+                String result = fastSearchTool.formatResults(matches);
+                staged.addConversationTurn("user", input);
+                staged.addConversationTurn("assistant", result);
+                memory.replaceWith(staged);
+                return result;
+            }
             Map<String, Object> analysis = timeOnlyRequest
                     ? Map.of("intent", "time-based recommendation", "availableTime", timeOnlyMinutes)
                     : llmClient.analyzeRequest(input, currentStep);

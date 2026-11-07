@@ -95,6 +95,25 @@ public class RecipeSearchTool implements AgentTool {
         return input != null && !keywords(input).isEmpty();
     }
 
+    /** True for a bare category/recipe keyword that needs no language interpretation. */
+    public static boolean isSimpleSearchQuery(String input) {
+        if (input == null || keywords(input).size() != 1) return false;
+        var matcher = WORD.matcher(input.trim());
+        if (!matcher.find()) return false;
+        return !matcher.find();
+    }
+
+    public boolean isRecipeNameKeyword(String input) {
+        List<String> query = keywords(input);
+        if (query.size() != 1) return false;
+        String wanted = query.getFirst();
+        return repository.getAllRecipes().stream().anyMatch(recipe -> {
+            Set<String> nameWords = new java.util.HashSet<>();
+            addWords(nameWords, recipe.getName());
+            return nameWords.contains(wanted);
+        });
+    }
+
     public String interpretRequest(String input) {
         return "Search criteria: " + keywords(input);
     }

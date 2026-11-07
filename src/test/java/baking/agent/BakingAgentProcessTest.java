@@ -93,6 +93,29 @@ class BakingAgentProcessTest {
     }
 
     @Test
+    void bareRecipeKeywordSearchesWithoutAnyLlmCall() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+
+        String result = agent.processRequest(request("cookies"));
+
+        assertTrue(result.contains("Matching recipes"));
+        assertTrue(result.contains("Classic Chocolate Chip Cookies"));
+        assertTrue(provider.getPrompts().isEmpty());
+    }
+
+    @Test
+    void bareCategorySearchesWithoutAnyLlmCall() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+
+        String result = agent.processRequest(request("brownies"));
+
+        assertTrue(result.contains("Matching recipes") || result.contains("close category match"));
+        assertTrue(provider.getPrompts().isEmpty());
+    }
+
+    @Test
     void timeOnlyRequestReusesLastSearchResultsAndSupportsHourExpressions() {
         MockLLMProvider provider = new MockLLMProvider("[\"Fast Lemon Cookies\"]");
         AgentMemory memory = new AgentMemory();

@@ -75,7 +75,7 @@ public class GeminiAdapter implements LLMProvider {
                 }
                 if (status < 200 || status >= 300) {
                     String message = status == 429
-                            ? "Gemini rate limit reached (HTTP 429). Please try again."
+                            ? "Daily or per-minute AI quota reached. Try again later."
                             : "Gemini could not complete the request (HTTP " + status + ").";
                     throw fail(message, status);
                 }
@@ -148,7 +148,7 @@ public class GeminiAdapter implements LLMProvider {
         }
     }
 
-    private static boolean retryableStatus(int status) { return status == 429 || status == 503; }
+    private static boolean retryableStatus(int status) { return status == 503; }
 
     private static Duration backoff(int attempt) { return Duration.ofSeconds(1L << attempt); }
 
