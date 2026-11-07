@@ -28,7 +28,7 @@ class FirstToolsTest {
     }
 
     @Test
-    void recipeSearchReturnsCriteriaMatchesAndAnObservableFallback() {
+    void recipeSearchReturnsCriteriaMatchesWithoutCallingTheLlm() {
         MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"search\",\"searchTerm\":\"Chocolate Chip\"}");
         RecipeSearchTool tool = new RecipeSearchTool(new RecipeRepository(), new LLMClient(provider));
         List<Recipe> matches = tool.searchRecipes("find chocolate chip cookies");
@@ -39,7 +39,32 @@ class FirstToolsTest {
 
         RecipeSearchTool noMatches = new RecipeSearchTool(new RecipeRepository(),
                 new LLMClient(new MockLLMProvider("{\"searchTerm\":\"unicorn\"}")));
-        assertTrue(noMatches.execute("unicorn").contains("close category match"));
+        assertTrue(noMatches.execute("unicorn").contains("I don't have a recipe for 'unicorn'"));
+        assertTrue(noMatches.getLastSearchResults().isEmpty());
+    }
+
+    @Test
+    void recipeSearchFindsFrenchMacaronsFromTheCatalog() {
+        RecipeSearchTool tool = new RecipeSearchTool(new RecipeRepository(),
+                new LLMClient(new MockLLMProvider("{}")));
+
+        List<Recipe> matches = tool.searchRecipes("macarons");
+
+        assertFalse(matches.isEmpty());
+        assertEquals("French Macarons", matches.getFirst().getName());
+    }
+
+    @Test
+    void unknownRequestDoesNotPresentAnUnrelatedRecipeAsAMatch() {
+        RecipeSearchTool tool = new RecipeSearchTool(new RecipeRepository(),
+                new LLMClient(new MockLLMProvider("{}")));
+
+        String response = tool.execute("sushi");
+
+        assertTrue(response.contains("I don't have a recipe for 'sushi' in my collection yet."));
+        assertTrue(response.contains("show you all recipes"));
+        assertFalse(response.contains("Classic Chocolate Chip Cookies"));
+        assertTrue(tool.getLastSearchResults().isEmpty());
     }
 
     @Test

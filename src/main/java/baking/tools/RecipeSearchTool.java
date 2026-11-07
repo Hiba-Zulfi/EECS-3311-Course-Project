@@ -15,7 +15,8 @@ import java.util.regex.Pattern;
 public class RecipeSearchTool implements AgentTool {
     private final RecipeRepository repository;
     private List<Recipe> lastSearchResults = List.of();
-    private boolean closeMatch;
+    private String lastSearchQuery = "";
+    private boolean lastSearchHadKeywordMatch;
 
     private static final Set<String> STOPWORDS = Set.of(
             "i", "me", "my", "we", "our", "you", "your", "want", "wanting", "would", "like", "need", "looking",
@@ -60,6 +61,7 @@ public class RecipeSearchTool implements AgentTool {
     }
 
     private List<Recipe> search(String input, List<String> dietaryRestrictions, int availableTime) {
+        lastSearchQuery = input.trim();
         List<String> keywords = keywords(input);
         if (debugEnabled()) System.err.println("[BAKING_DEBUG] Search keywords: " + keywords);
         List<RecipeScore> scored = repository.getAllRecipes().stream()
@@ -67,13 +69,8 @@ public class RecipeSearchTool implements AgentTool {
                 .filter(candidate -> candidate.score() > 0)
                 .sorted((a, b) -> Integer.compare(b.score(), a.score()))
                 .toList();
-        closeMatch = scored.isEmpty();
-        List<Recipe> candidates;
-        if (scored.isEmpty()) {
-            candidates = closestCategoryMatch(input);
-        } else {
-            candidates = scored.stream().map(RecipeScore::recipe).toList();
-        }
+        lastSearchHadKeywordMatch = !scored.isEmpty();
+        List<Recipe> candidates = scored.stream().map(RecipeScore::recipe).toList();
         debugCount("after keyword scoring", scored.size());
         List<Recipe> dietaryFiltered = candidates.stream()
                 .filter(recipe -> dietaryRestrictions == null || dietaryRestrictions.isEmpty()
@@ -119,10 +116,16 @@ public class RecipeSearchTool implements AgentTool {
     }
 
     public String formatResults(List<Recipe> recipes) {
-        if (recipes.isEmpty()) return "No recipes matched the requested keywords and hard filters.";
+        if (recipes.isEmpty()) {
+            if (!lastSearchHadKeywordMatch) {
+                String askedFor = lastSearchQuery.isBlank() ? "that" : lastSearchQuery;
+                return "I don't have a recipe for '" + askedFor + "' in my collection yet. "
+                        + "I can show you all recipes if you'd like.";
+            }
+            return "No recipes matched the requested keywords and hard filters.";
+        }
         int shown = Math.min(5, recipes.size());
-        StringBuilder result = new StringBuilder(closeMatch
-                ? "No exact keyword match; here is a close category match:\n" : "Matching recipes:\n");
+        StringBuilder result = new StringBuilder("Matching recipes:\n");
         for (int i = 0; i < shown; i++) {
             Recipe recipe = recipes.get(i);
             result.append('[').append(recipe.getRecipeID()).append("] ").append(recipe.getName())
@@ -166,19 +169,6 @@ public class RecipeSearchTool implements AgentTool {
         if (word.endsWith("ies") && word.length() > 4) return word.substring(0, word.length() - 3) + "y";
         if (word.endsWith("s") && word.length() > 3) return word.substring(0, word.length() - 1);
         return word;
-    }
-
-    private List<Recipe> closestCategoryMatch(String input) {
-        List<String> queryWords = keywords(input);
-        List<RecipeScore> categoryScores = repository.getAllRecipes().stream()
-                .map(recipe -> new RecipeScore(recipe, score(recipe, queryWords)))
-                .sorted((a, b) -> Integer.compare(b.score(), a.score())).toList();
-        if (categoryScores.isEmpty()) return List.of();
-        int bestScore = categoryScores.getFirst().score();
-        if (bestScore > 0) return categoryScores.stream().filter(s -> s.score() == bestScore)
-                .map(RecipeScore::recipe).toList();
-        // No literal overlap exists; show the first catalog recipe as an explicitly labeled fallback.
-        return repository.getAllRecipes().stream().limit(1).toList();
     }
 
     private static void debugCount(String phase, int count) {
