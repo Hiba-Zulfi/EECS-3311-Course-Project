@@ -21,12 +21,10 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingWorker;
-import javax.swing.UIManager;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +89,6 @@ public final class BakingGUI {
 
         JPanel root = new JPanel(new BorderLayout(GAP, GAP));
         root.setBorder(BorderFactory.createEmptyBorder(GAP, GAP, GAP, GAP));
-        currentRecipeBanner.setFont(currentRecipeBanner.getFont().deriveFont(Font.BOLD, 17f));
         currentRecipeBanner.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder(10, 12, 10, 12)));
         root.add(currentRecipeBanner, BorderLayout.NORTH);
@@ -116,7 +113,7 @@ public final class BakingGUI {
         refreshRecipeList(controller.getRecipes());
         setRecipeToolsEnabled(false);
         setAIHelpEnabled(false);
-        applyReadableFonts(frame.getContentPane());
+        BakingTheme.apply(frame, frame.getContentPane(), currentRecipeBanner, tabs);
         tabs.addChangeListener(event -> {
             if (tabs.getSelectedIndex() == 2) refreshFavourites();
         });
@@ -629,14 +626,6 @@ public final class BakingGUI {
             }
         });
         return list;
-    }
-
-    private static void applyReadableFonts(Component component) {
-        Font current = component.getFont();
-        if (current != null) component.setFont(current.deriveFont(15f));
-        if (component instanceof java.awt.Container container) {
-            for (Component child : container.getComponents()) applyReadableFonts(child);
-        }
     }
 
     private static int positiveInteger(String text) {

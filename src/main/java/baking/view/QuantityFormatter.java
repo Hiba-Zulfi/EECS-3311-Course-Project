@@ -62,8 +62,9 @@ public final class QuantityFormatter {
             case "pinches" -> "pinch";
             default -> unit;
         };
+        if (List.of("large", "medium", "small", "whole", "each").contains(unit)) return unit;
         if (isAbbreviation(unit)) return unit;
-        boolean singular = Math.abs(quantity - 1.0) < 0.0000001;
+        boolean singular = quantity > 0 && quantity <= 1.0;
         if (singular) return unit;
         return unit.endsWith("s") ? unit : unit + "s";
     }
