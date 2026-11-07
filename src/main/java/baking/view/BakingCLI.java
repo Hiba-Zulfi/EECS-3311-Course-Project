@@ -115,7 +115,9 @@ public final class BakingCLI {
     }
 
     private void ingredientsCommand(String argument) {
-        if (!argument.isEmpty()) availableIngredients = parseIngredients(argument);
+        if (argument.equalsIgnoreCase("clear")) availableIngredients = List.of();
+        else if (!argument.isEmpty()) availableIngredients = controller.mergeIngredients(
+                availableIngredients, parseIngredients(argument));
         if (availableIngredients.isEmpty()) displayResult("Your ingredient list is empty.");
         else displayResult("Ingredients on hand: " + formatIngredients(availableIngredients));
     }
@@ -222,7 +224,7 @@ public final class BakingCLI {
     }
 
     private static List<Ingredient> parseIngredients(String value) {
-        return java.util.Arrays.stream(value.split(";"))
+        return java.util.Arrays.stream(value.split("[,;]"))
                 .map(String::trim).filter(s -> !s.isEmpty()).map(BakingCLI::parseIngredient).toList();
     }
 
@@ -231,19 +233,47 @@ public final class BakingCLI {
         if (colon < 1) throw new IllegalArgumentException("Use ingredient format Name:quantity unit; for example Flour:2 cups.");
         String name = text.substring(0, colon).trim();
         String[] quantityAndUnit = text.substring(colon + 1).trim().split("\\s+", 2);
-        if (quantityAndUnit.length != 2) throw new IllegalArgumentException("Each ingredient needs a quantity and unit.");
         try {
             double quantity = Double.parseDouble(quantityAndUnit[0]);
             if (!Double.isFinite(quantity) || quantity < 0) throw new NumberFormatException();
-            return new Ingredient(name, quantity, quantityAndUnit[1]);
+            String unit = quantityAndUnit.length == 1 ? "count" : normalizePantryUnit(quantityAndUnit[1]);
+            return new Ingredient(name, quantity, unit);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Ingredient quantities must be non-negative numbers.");
         }
     }
 
+    private static String normalizePantryUnit(String rawUnit) {
+        String unit = rawUnit.toLowerCase(java.util.Locale.ROOT);
+        String normalized = switch (unit) {
+            case "cups" -> "cup";
+            case "tablespoon", "tablespoons" -> "tbsp";
+            case "teaspoon", "teaspoons" -> "tsp";
+            case "grams" -> "g";
+            case "kilogram", "kilograms" -> "kg";
+            case "ounce", "ounces" -> "oz";
+            case "pound", "pounds" -> "lb";
+            case "milliliter", "milliliters" -> "ml";
+            case "liter", "liters" -> "l";
+            case "pinches" -> "pinch";
+            default -> unit;
+        };
+        if (!java.util.Set.of("cup", "tbsp", "tsp", "g", "kg", "oz", "lb", "ml", "l", "pinch")
+                .contains(normalized)) {
+            throw new IllegalArgumentException("Unknown unit '" + rawUnit
+                    + "'. Valid units: cup, tbsp, tsp, g, kg, oz, lb, ml, l, pinch.");
+        }
+        return normalized;
+    }
+
     private static String formatIngredients(List<Ingredient> ingredients) {
-        return ingredients.stream().map(i -> i.getName() + " " + i.getQuantity() + " " + i.getUnit())
+        return ingredients.stream().map(i -> i.getName() + " " + cleanQuantity(i.getQuantity())
+                        + (i.getUnit().equalsIgnoreCase("count") ? "" : " " + i.getUnit()))
                 .reduce((a, b) -> a + "; " + b).orElse("");
+    }
+
+    private static String cleanQuantity(double quantity) {
+        return java.math.BigDecimal.valueOf(quantity).stripTrailingZeros().toPlainString();
     }
 
     public void displayResult(String result) { output.println(Objects.requireNonNullElse(result, "")); }

@@ -44,4 +44,32 @@ class IngredientManagerTest {
         IngredientManager withPantry = new IngredientManager(List.of(new Ingredient("flour", 3, "cups")));
         assertEquals(1, withPantry.findMissingIngredients(recipe).size());
     }
+
+    @Test
+    void matchesPluralNamesAndIgnoresQualifiers() {
+        Recipe qualified = new Recipe(2, "Egg loaf", "", 2, 1, 1,
+                List.of(new Ingredient("all-purpose flour", 1, "cup"), new Ingredient("egg", 2, "large")), List.of());
+        assertTrue(manager.compareIngredients(qualified.getIngredients(), List.of(
+                new Ingredient("FlOuR", 1, "cup"), new Ingredient("eggs", 2, "count"))).isEmpty());
+    }
+
+    @Test
+    void convertsCompatibleUnitsBeforeComparing() {
+        Recipe oneCup = new Recipe(3, "Test", "", 1, 1, 1,
+                List.of(new Ingredient("butter", 1, "cup")), List.of());
+        assertTrue(manager.compareIngredients(oneCup.getIngredients(),
+                List.of(new Ingredient("butter", 16, "tbsp"))).isEmpty());
+        List<Ingredient> missing = manager.compareIngredients(oneCup.getIngredients(),
+                List.of(new Ingredient("butter", 8, "tbsp")));
+        assertEquals(0.5, missing.getFirst().getQuantity(), 0.0001);
+    }
+
+    @Test
+    void pantryMergeUpdatesSameNormalizedNameAndAddsNewEntries() {
+        List<Ingredient> merged = manager.mergeIngredients(
+                List.of(new Ingredient("all-purpose flour", 2, "cup")),
+                List.of(new Ingredient("flour", 3, "cup"), new Ingredient("eggs", 2, "count")));
+        assertEquals(2, merged.size());
+        assertEquals(3, merged.getFirst().getQuantity());
+    }
 }

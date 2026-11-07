@@ -51,6 +51,39 @@ class BakingCLITest {
     }
 
     @Test
+    void ingredientsCommandAddsUpdatesFormatsCountsAndClears() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ByteArrayOutputStream errors = new ByteArrayOutputStream();
+        BakingCLI cli = createCli(provider, output, "ingredients-merge.json");
+
+        cli.submitCommand("/ingredients flour:3 cups, butter:1 cup, egg:2");
+        cli.submitCommand("/ingredients flour:4 cups");
+
+        String result = output.toString();
+        assertTrue(result.contains("flour 4 cup; butter 1 cup; egg 2"));
+        assertFalse(result.contains("4.0"));
+        assertFalse(result.contains("egg 2 count"));
+        cli.submitCommand("/ingredients clear");
+        assertTrue(output.toString().contains("Your ingredient list is empty."));
+        assertTrue(errors.toString().isEmpty());
+        assertTrue(provider.getPrompts().isEmpty());
+    }
+
+    @Test
+    void ingredientsCommandRejectsUnknownUnitsWithValidUnitList() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        ByteArrayOutputStream errors = new ByteArrayOutputStream();
+        BakingCLI cli = new BakingCLI(createController(provider, "invalid-unit.json"),
+                new ByteArrayInputStream(new byte[0]), new PrintStream(new ByteArrayOutputStream()), new PrintStream(errors));
+
+        cli.submitCommand("/ingredients flour:2 scoops");
+
+        assertTrue(errors.toString().contains("Unknown unit 'scoops'"));
+        assertTrue(errors.toString().contains("cup, tbsp, tsp, g, kg, oz, lb, ml, l, pinch"));
+    }
+
+    @Test
     void recipeSearchShowsIdsAndAtMostFiveMatches() {
         MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"recipe search\"}");
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -184,13 +217,17 @@ class BakingCLITest {
     }
 
     private BakingCLI createCli(MockLLMProvider provider, ByteArrayOutputStream output, String favouritesFile) {
+        AgentController controller = createController(provider, favouritesFile);
+        return new BakingCLI(controller, new ByteArrayInputStream(new byte[0]),
+                new PrintStream(output), System.err);
+    }
+
+    private AgentController createController(MockLLMProvider provider, String favouritesFile) {
         IngredientManager ingredients = new IngredientManager();
-        AgentController controller = new AgentController(
+        return new AgentController(
                 new BakingAgent(new LLMClient(provider), new ToolManager(new LLMClient(provider),
                         new RecipeRepository(), ingredients), new AgentMemory()),
                 ingredients, new RecipeRepository(), new FavouritesManager(temp.resolve(favouritesFile)),
                 new ShoppingListGenerator(ingredients));
-        return new BakingCLI(controller, new ByteArrayInputStream(new byte[0]),
-                new PrintStream(output), System.err);
     }
 }

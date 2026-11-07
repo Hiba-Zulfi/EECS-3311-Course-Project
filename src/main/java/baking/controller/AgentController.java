@@ -37,6 +37,9 @@ public final class AgentController {
     public List<Ingredient> checkIngredients(Recipe recipe, List<Ingredient> available) {
         return ingredientManager.checkAvailability(recipe, available);
     }
+    public List<Ingredient> mergeIngredients(List<Ingredient> current, List<Ingredient> additions) {
+        return ingredientManager.mergeIngredients(current, additions);
+    }
     public Recipe scaleRecipe(Recipe recipe, int servings) {
         return recipe.scaleRecipe(recipe, servings);
     }
