@@ -79,9 +79,14 @@ public final class BakingGUI {
     private final JLabel emptyFavouritesMessage = new JLabel("No saved favourites yet.");
     private final JPanel aiHelpPanel = new JPanel(new BorderLayout(8, 8));
     private final JComboBox<Ingredient> substituteIngredient = new JComboBox<>();
+    private final JButton substituteButton = new JButton("Find substitute");
     private final JTextField tasteField = new JTextField();
+    private final JButton customizeButton = new JButton("Customize");
     private final JTextArea problemField = new JTextArea(4, 30);
+    private final JButton troubleshootButton = new JButton("Troubleshoot");
     private final JTextField clarificationField = new JTextField();
+    private final JButton sendClarificationButton = new JButton("Send reply");
+    private final JPanel clarificationPanel = new JPanel(new BorderLayout(8, 6));
     private final JTextArea aiResults = resultArea();
     private final JLabel aiInputError = new JLabel(" ");
 
@@ -126,6 +131,7 @@ public final class BakingGUI {
         setRecipeToolsEnabled(false);
         setAIHelpEnabled(false);
         BakingTheme.apply(frame, frame.getContentPane(), currentRecipeBanner, tabs);
+        sizeAIActionButtons();
         styleShoppingNotepad();
         tabs.setIconAt(3, GuiIcons.heart(15));
         tabs.addChangeListener(event -> {
@@ -247,14 +253,16 @@ public final class BakingGUI {
 
     private JPanel buildAIHelpTab() {
         aiHelpPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        aiHelpPanel.add(instruction("Ask for recipe-specific advice. You can answer a clarification below."), BorderLayout.NORTH);
-        JPanel actions = new JPanel(new GridLayout(0, 1, 8, 8));
+        aiHelpPanel.add(instruction("Ask for recipe-specific advice."), BorderLayout.NORTH);
+        JPanel actions = new JPanel();
+        actions.setLayout(new javax.swing.BoxLayout(actions, javax.swing.BoxLayout.Y_AXIS));
 
         JPanel substituteGroup = titledGroup("Find a substitute");
-        JPanel substituteRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        substituteRow.add(new JLabel("Ingredient"));
+        JPanel substituteRow = new JPanel(new BorderLayout(8, 0));
+        substituteRow.add(new JLabel("Ingredient"), BorderLayout.WEST);
         substituteIngredient.setRenderer((list, value, index, selected, focus) -> {
             JLabel label = new JLabel(value == null ? "" : formatIngredient((Ingredient) value));
+            if (value instanceof Ingredient ingredient) label.setToolTipText(ingredient.getName());
             if (selected) {
                 label.setOpaque(true);
                 label.setBackground(list.getSelectionBackground());
@@ -262,31 +270,38 @@ public final class BakingGUI {
             }
             return label;
         });
-        substituteRow.add(substituteIngredient);
-        JButton substituteButton = new JButton("Find");
+        substituteIngredient.setMinimumSize(new Dimension(300, substituteIngredient.getPreferredSize().height));
+        substituteIngredient.setPreferredSize(new Dimension(340, substituteIngredient.getPreferredSize().height));
+        substituteIngredient.setToolTipText("Choose an ingredient");
+        substituteIngredient.addActionListener(event -> {
+            Ingredient selected = (Ingredient) substituteIngredient.getSelectedItem();
+            substituteIngredient.setToolTipText(selected == null ? "Choose an ingredient" : selected.getName());
+        });
+        substituteRow.add(substituteIngredient, BorderLayout.CENTER);
         substituteButton.addActionListener(event -> findSubstitute());
-        substituteRow.add(substituteButton);
+        substituteRow.add(substituteButton, BorderLayout.EAST);
         substituteGroup.add(substituteRow, BorderLayout.CENTER);
 
         JPanel tasteGroup = titledGroup("Change the taste");
         JPanel tasteRow = new JPanel(new BorderLayout(8, 0));
         installPlaceholder(tasteField, "e.g. make it less sweet");
         tasteRow.add(tasteField, BorderLayout.CENTER);
-        JButton tasteButton = new JButton("Customize");
-        tasteButton.addActionListener(event -> customizeTaste());
-        tasteRow.add(tasteButton, BorderLayout.EAST);
+        customizeButton.addActionListener(event -> customizeTaste());
+        tasteRow.add(customizeButton, BorderLayout.EAST);
         tasteGroup.add(tasteRow, BorderLayout.CENTER);
 
         JPanel problemGroup = titledGroup("Fix a baking problem");
+        problemField.setRows(3);
         problemField.setLineWrap(true);
         problemField.setWrapStyleWord(true);
         installPlaceholder(problemField, "e.g. my cookies spread too much");
         JScrollPane problemScroll = new JScrollPane(problemField);
-        JButton troubleshootButton = new JButton("Troubleshoot");
         troubleshootButton.addActionListener(event -> troubleshoot());
-        JPanel problemBody = new JPanel(new BorderLayout(8, 0));
+        JPanel problemBody = new JPanel(new BorderLayout(6, 4));
         problemBody.add(problemScroll, BorderLayout.CENTER);
-        problemBody.add(troubleshootButton, BorderLayout.EAST);
+        JPanel troubleshootRow = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        troubleshootRow.add(troubleshootButton);
+        problemBody.add(troubleshootRow, BorderLayout.SOUTH);
         problemGroup.add(problemBody, BorderLayout.CENTER);
 
         actions.add(substituteGroup);
@@ -298,17 +313,19 @@ public final class BakingGUI {
         JScrollPane resultsScroll = new JScrollPane(aiResults);
         resultsScroll.setBorder(BorderFactory.createTitledBorder("AI response"));
 
+        clarificationPanel.setBorder(BorderFactory.createTitledBorder("Reply to the assistant"));
         JPanel answerRow = new JPanel(new BorderLayout(8, 0));
-        answerRow.add(new JLabel("Answer a clarification:"), BorderLayout.WEST);
         answerRow.add(clarificationField, BorderLayout.CENTER);
-        JButton sendAnswer = new JButton("Send answer");
-        sendAnswer.addActionListener(event -> answerClarification());
-        answerRow.add(sendAnswer, BorderLayout.EAST);
-        JPanel responsePanel = new JPanel(new BorderLayout(6, 6));
-        responsePanel.add(resultsScroll, BorderLayout.CENTER);
-        responsePanel.add(answerRow, BorderLayout.SOUTH);
-        aiHelpPanel.add(actions, BorderLayout.CENTER);
-        aiHelpPanel.add(responsePanel, BorderLayout.SOUTH);
+        sendClarificationButton.addActionListener(event -> answerClarification());
+        answerRow.add(sendClarificationButton, BorderLayout.EAST);
+        clarificationPanel.add(answerRow, BorderLayout.CENTER);
+        clarificationPanel.setVisible(false);
+
+        JPanel content = new JPanel(new BorderLayout(8, 8));
+        content.add(actions, BorderLayout.NORTH);
+        content.add(resultsScroll, BorderLayout.CENTER);
+        content.add(clarificationPanel, BorderLayout.SOUTH);
+        aiHelpPanel.add(content, BorderLayout.CENTER);
         return aiHelpPanel;
     }
 
@@ -621,20 +638,55 @@ public final class BakingGUI {
     }
 
     private void runAIRequest(String request) {
+        clarificationPanel.setVisible(false);
+        aiHelpPanel.revalidate();
+        aiHelpPanel.repaint();
         statusLine.setText("Thinking...");
         List<Ingredient> pantry = List.copyOf(availableIngredients);
+        substituteButton.setEnabled(false);
+        customizeButton.setEnabled(false);
+        troubleshootButton.setEnabled(false);
         setAIHelpEnabled(false);
         new SwingWorker<String, Void>() {
             @Override protected String doInBackground() {
                 return controller.processRequest(new BakingRequest(request, 0, 0, pantry, List.of(), ""));
             }
             @Override protected void done() {
-                try { aiResults.setText(get()); }
-                catch (Exception error) { aiResults.setText("Unable to complete the request: " + messageFor(error)); }
+                try {
+                    String response = get();
+                    aiResults.setText(response);
+                    clarificationPanel.setVisible(isClarificationPrompt(response));
+                } catch (Exception error) {
+                    aiResults.setText("Unable to complete the request: " + messageFor(error));
+                }
                 statusLine.setText("Ready");
                 setAIHelpEnabled(selectedRecipe != null);
+                aiHelpPanel.revalidate();
+                aiHelpPanel.repaint();
             }
         }.execute();
+    }
+
+    private void sizeAIActionButtons() {
+        int width = 145;
+        int height = 36;
+        for (JButton button : List.of(substituteButton, customizeButton, troubleshootButton)) {
+            Dimension natural = button.getPreferredSize();
+            width = Math.max(width, natural.width);
+            height = Math.max(height, natural.height);
+        }
+        Dimension shared = new Dimension(width, height);
+        for (JButton button : List.of(substituteButton, customizeButton, troubleshootButton)) {
+            button.setMinimumSize(new Dimension(145, height));
+            button.setPreferredSize(shared);
+        }
+        Dimension combo = substituteIngredient.getPreferredSize();
+        substituteIngredient.setMinimumSize(new Dimension(300, Math.max(combo.height, 36)));
+        substituteIngredient.setPreferredSize(new Dimension(Math.max(340, combo.width), Math.max(combo.height, 36)));
+    }
+
+    private static boolean isClarificationPrompt(String response) {
+        return response != null && response.toLowerCase(java.util.Locale.ROOT).contains("would you like");
     }
 
     private void showRecipeResult(String result) {
