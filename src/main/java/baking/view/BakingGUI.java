@@ -140,7 +140,11 @@ public final class BakingGUI {
         applyDisplayFonts();
         sizeAIActionButtons();
         styleShoppingNotepad();
-        tabs.setIconAt(3, GuiIcons.heart(15));
+        tabs.setIconAt(0, GuiIcons.magnifier(18));
+        tabs.setIconAt(1, GuiIcons.rollingPin(18));
+        tabs.setIconAt(2, GuiIcons.jar(18));
+        tabs.setIconAt(3, GuiIcons.heart(18));
+        tabs.setIconAt(4, GuiIcons.sparkle(18));
         tabs.addChangeListener(event -> {
             if (tabs.getSelectedIndex() == 3) refreshFavourites();
         });

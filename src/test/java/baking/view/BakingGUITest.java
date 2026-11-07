@@ -13,8 +13,16 @@ class BakingGUITest {
     void vectorIconsPaintWithoutImageAssets() {
         var heart = GuiIcons.heart(20);
         var cup = GuiIcons.measuringCup(28);
+        var magnifier = GuiIcons.magnifier(18);
+        var rollingPin = GuiIcons.rollingPin(18);
+        var jar = GuiIcons.jar(18);
+        var sparkle = GuiIcons.sparkle(18);
         assertEquals(20, heart.getIconWidth());
         assertEquals(28, cup.getIconHeight());
+        assertEquals(18, magnifier.getIconWidth());
+        assertEquals(18, rollingPin.getIconHeight());
+        assertEquals(18, jar.getIconWidth());
+        assertEquals(18, sparkle.getIconHeight());
 
         BufferedImage canvas = new BufferedImage(28, 28, BufferedImage.TYPE_INT_ARGB);
         heart.paintIcon(null, canvas.getGraphics(), 0, 0);
@@ -22,6 +30,12 @@ class BakingGUITest {
         canvas = new BufferedImage(28, 28, BufferedImage.TYPE_INT_ARGB);
         cup.paintIcon(null, canvas.getGraphics(), 0, 0);
         assertTrue(canvas.getRGB(8, 19) != 0);
+        for (var icon : List.of(magnifier, rollingPin, jar, sparkle)) {
+            canvas = new BufferedImage(18, 18, BufferedImage.TYPE_INT_ARGB);
+            icon.paintIcon(null, canvas.getGraphics(), 0, 0);
+            assertTrue(java.util.Arrays.stream(canvas.getRGB(0, 0, 18, 18, null, 0, 18))
+                    .anyMatch(pixel -> pixel != 0));
+        }
     }
 
     @Test
