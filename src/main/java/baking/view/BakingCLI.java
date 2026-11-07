@@ -267,13 +267,7 @@ public final class BakingCLI {
     }
 
     private static String formatIngredients(List<Ingredient> ingredients) {
-        return ingredients.stream().map(i -> i.getName() + " " + cleanQuantity(i.getQuantity())
-                        + (i.getUnit().equalsIgnoreCase("count") ? "" : " " + i.getUnit()))
-                .reduce((a, b) -> a + "; " + b).orElse("");
-    }
-
-    private static String cleanQuantity(double quantity) {
-        return java.math.BigDecimal.valueOf(quantity).stripTrailingZeros().toPlainString();
+        return QuantityFormatter.formatIngredients(ingredients);
     }
 
     public void displayResult(String result) { output.println(Objects.requireNonNullElse(result, "")); }

@@ -28,7 +28,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +52,12 @@ public final class BakingGUI {
     private final JLabel servingsError = new JLabel(" ");
     private final JLabel ingredientsError = new JLabel(" ");
     private final JTextField servingsField = new JTextField();
-    private final JTextField ingredientsField = new JTextField();
+    private final JTextField ingredientNameField = new JTextField();
+    private final JTextField ingredientAmountField = new JTextField();
+    private final JComboBox<String> ingredientUnit = new JComboBox<>(new String[]{
+            "cup", "tbsp", "tsp", "g", "kg", "oz", "lb", "ml", "l", "pinch", "none (count)"});
+    private final DefaultListModel<Ingredient> pantryModel = new DefaultListModel<>();
+    private final JList<Ingredient> pantryList = ingredientList(pantryModel);
     private final JTextArea recipeToolsResults = resultArea();
     private final List<Ingredient> availableIngredients = new ArrayList<>();
     private final JButton scaleButton = new JButton("Scale");
@@ -123,7 +127,7 @@ public final class BakingGUI {
         panel.add(instruction("Describe what you want to bake"), BorderLayout.NORTH);
 
         JPanel requestRow = new JPanel(new BorderLayout(8, 0));
-        requestField.setText("chocolate chip cookies for 12 people");
+        installPlaceholder(requestField, "e.g. chocolate chip cookies for 12 people");
         requestRow.add(requestField, BorderLayout.CENTER);
         requestRow.add(askButton, BorderLayout.EAST);
 
@@ -132,7 +136,8 @@ public final class BakingGUI {
         resultScroll.setBorder(BorderFactory.createTitledBorder("Agent response"));
 
         JPanel listArea = new JPanel(new BorderLayout(6, 6));
-        listArea.add(new JLabel("Recipes (select a row, then use the button):"), BorderLayout.NORTH);
+        listArea.setBorder(BorderFactory.createTitledBorder("Suggested recipes"));
+        listArea.add(new JLabel("Choose a recipe, then use the button below."), BorderLayout.NORTH);
         listArea.add(new JScrollPane(recipeList), BorderLayout.CENTER);
         JButton useRecipe = new JButton("Use this recipe");
         useRecipe.addActionListener(event -> useHighlightedRecipe());
@@ -268,16 +273,47 @@ public final class BakingGUI {
     }
 
     private JPanel buildIngredientsGroup() {
-        JPanel group = titledGroup("Ingredients");
-        group.setLayout(new BorderLayout(5, 5));
-        JPanel input = new JPanel(new BorderLayout(5, 5));
-        input.add(new JLabel("What you have (e.g. flour:2 cups, egg:3)"), BorderLayout.NORTH);
-        input.add(ingredientsField, BorderLayout.CENTER);
-        checkButton.addActionListener(event -> checkMissingIngredients());
-        input.add(checkButton, BorderLayout.EAST);
-        group.add(input, BorderLayout.CENTER);
+        JPanel group = titledGroup("Ingredients you have");
+        group.setLayout(new BorderLayout(7, 7));
+        JPanel entry = new JPanel(new GridLayout(1, 7, 6, 4));
+        entry.add(new JLabel("Ingredient"));
+        installPlaceholder(ingredientNameField, "e.g. flour");
+        entry.add(ingredientNameField);
+        entry.add(new JLabel("Amount"));
+        installPlaceholder(ingredientAmountField, "e.g. 2");
+        entry.add(ingredientAmountField);
+        entry.add(new JLabel("Unit"));
+        entry.add(ingredientUnit);
+        JButton addIngredient = new JButton("Add ingredient");
+        addIngredient.addActionListener(event -> addPantryIngredient());
+        JPanel entrySection = new JPanel(new BorderLayout(5, 5));
+        entrySection.add(entry, BorderLayout.CENTER);
+        entrySection.add(addIngredient, BorderLayout.EAST);
+
+        JPanel listSection = new JPanel(new BorderLayout(5, 5));
+        listSection.add(new JScrollPane(pantryList), BorderLayout.CENTER);
+        JPanel listActions = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
+        JLabel emptyPantry = new JLabel("Nothing added yet");
+        emptyPantry.setName("emptyPantryMessage");
+        pantryList.putClientProperty("emptyMessage", emptyPantry);
+        JButton removeIngredient = new JButton("Remove selected");
+        removeIngredient.addActionListener(event -> removePantryIngredient());
+        JButton clearIngredients = new JButton("Clear all");
+        clearIngredients.addActionListener(event -> clearPantry());
+        listActions.add(emptyPantry);
+        listActions.add(removeIngredient);
+        listActions.add(clearIngredients);
+        listSection.add(listActions, BorderLayout.SOUTH);
+
+        JPanel center = new JPanel(new BorderLayout(5, 5));
+        center.add(entrySection, BorderLayout.NORTH);
+        center.add(listSection, BorderLayout.CENTER);
+        group.add(center, BorderLayout.CENTER);
         ingredientsError.setForeground(new java.awt.Color(170, 35, 35));
         group.add(ingredientsError, BorderLayout.SOUTH);
+        checkButton.setText("Check what's missing");
+        checkButton.addActionListener(event -> checkMissingIngredients());
+        group.add(checkButton, BorderLayout.NORTH);
         return group;
     }
 
@@ -296,7 +332,7 @@ public final class BakingGUI {
     }
 
     private void askAgent() {
-        String request = requestField.getText().trim();
+        String request = placeholderValue(requestField, "e.g. chocolate chip cookies for 12 people");
         if (request.isEmpty()) {
             findResults.setText("Please describe what you want to bake.");
             requestField.requestFocusInWindow();
@@ -355,20 +391,57 @@ public final class BakingGUI {
 
     private void checkMissingIngredients() {
         ingredientsError.setText(" ");
-        if (!ingredientsField.getText().isBlank()) {
-            try {
-                List<Ingredient> additions = parseIngredientInput(ingredientsField.getText());
-                List<Ingredient> merged = controller.mergeIngredients(availableIngredients, additions);
-                availableIngredients.clear();
-                availableIngredients.addAll(merged);
-            } catch (IllegalArgumentException error) {
-                ingredientsError.setText(error.getMessage());
-                return;
-            }
-        }
         List<Ingredient> missing = controller.checkIngredients(requireSelectedRecipe(), availableIngredients);
-        showRecipeResult(missing.isEmpty() ? "You have all required ingredients."
+        showRecipeResult(availableIngredients.isEmpty()
+                ? "All ingredients are missing: " + formatIngredients(selectedRecipe.getIngredients())
+                : missing.isEmpty() ? "You have all required ingredients."
                 : "Missing: " + formatIngredients(missing));
+    }
+
+    private void addPantryIngredient() {
+        ingredientsError.setText(" ");
+        String name = placeholderValue(ingredientNameField, "e.g. flour");
+        String amountText = placeholderValue(ingredientAmountField, "e.g. 2");
+        if (name.isBlank()) { ingredientsError.setText("Enter an ingredient name."); return; }
+        double amount;
+        try {
+            amount = Double.parseDouble(amountText);
+            if (!Double.isFinite(amount) || amount < 0) throw new NumberFormatException();
+        } catch (NumberFormatException error) {
+            ingredientsError.setText("Enter a valid non-negative amount.");
+            return;
+        }
+        String unit = Objects.toString(ingredientUnit.getSelectedItem(), "cup");
+        if (unit.equals("none (count)")) unit = "count";
+        List<Ingredient> updated = controller.mergeIngredients(availableIngredients,
+                List.of(new Ingredient(name, amount, unit)));
+        availableIngredients.clear();
+        availableIngredients.addAll(updated);
+        ingredientNameField.setText("");
+        ingredientAmountField.setText("");
+        updatePantryList();
+    }
+
+    private void removePantryIngredient() {
+        Ingredient selected = pantryList.getSelectedValue();
+        if (selected == null) { ingredientsError.setText("Select an ingredient to remove."); return; }
+        availableIngredients.remove(selected);
+        updatePantryList();
+    }
+
+    private void clearPantry() {
+        availableIngredients.clear();
+        updatePantryList();
+        ingredientsError.setText(" ");
+    }
+
+    private void updatePantryList() {
+        pantryModel.clear();
+        availableIngredients.forEach(pantryModel::addElement);
+        Component emptyMessage = (Component) pantryList.getClientProperty("emptyMessage");
+        if (emptyMessage != null) emptyMessage.setVisible(availableIngredients.isEmpty());
+        pantryList.revalidate();
+        pantryList.repaint();
     }
 
     private void makeShoppingList() {
@@ -544,6 +617,20 @@ public final class BakingGUI {
         return list;
     }
 
+    private static JList<Ingredient> ingredientList(DefaultListModel<Ingredient> model) {
+        JList<Ingredient> list = new JList<>(model);
+        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.setCellRenderer(new DefaultListCellRenderer() {
+            @Override public Component getListCellRendererComponent(JList<?> owner, Object value, int index,
+                    boolean selected, boolean focus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(owner, value, index, selected, focus);
+                if (value instanceof Ingredient ingredient) label.setText(QuantityFormatter.formatIngredient(ingredient));
+                return label;
+            }
+        });
+        return list;
+    }
+
     private static void applyReadableFonts(Component component) {
         Font current = component.getFont();
         if (current != null) component.setFont(current.deriveFont(15f));
@@ -602,15 +689,11 @@ public final class BakingGUI {
     }
 
     private static String formatIngredients(List<Ingredient> ingredients) {
-        return ingredients.stream().map(ingredient -> ingredient.getName() + " "
-                + BigDecimal.valueOf(ingredient.getQuantity()).stripTrailingZeros().toPlainString()
-                + (ingredient.getUnit().equalsIgnoreCase("count") ? "" : " " + ingredient.getUnit()))
-                .reduce((left, right) -> left + "; " + right).orElse("");
+        return QuantityFormatter.formatIngredients(ingredients);
     }
 
     private static String formatIngredient(Ingredient ingredient) {
-        return ingredient.getName() + " " + BigDecimal.valueOf(ingredient.getQuantity()).stripTrailingZeros().toPlainString()
-                + (ingredient.getUnit().equalsIgnoreCase("count") ? "" : " " + ingredient.getUnit());
+        return QuantityFormatter.formatIngredient(ingredient);
     }
 
     private static void installPlaceholder(JTextField field, String placeholder) {
