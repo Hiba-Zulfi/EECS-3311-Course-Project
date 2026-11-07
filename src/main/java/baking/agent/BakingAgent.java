@@ -160,6 +160,7 @@ public class BakingAgent {
     }
 
     public AgentMemory getMemory() { return memory; }
+    public List<Recipe> getLastSearchResults() { return memory.getLastSearchResults(); }
 
     public void cancelPendingClarification() { memory.clearPendingClarification(); }
 
@@ -189,8 +190,7 @@ public class BakingAgent {
         staged.setLastSearchResults(matches);
         TimeRecommendationTool recommendationTool = (TimeRecommendationTool) selectTool("time-based recommendation");
         List<Recipe> ranked = recommendationTool.recommendRecipes(matches, request.getAvailableTime());
-        String result = recommendationTool.getLastExplanation() + "\n" + String.join("\n", ranked.stream()
-                .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
+        String result = recommendationTool.formatRecommendations(ranked);
         if (!ranked.isEmpty()) staged.setCurrentRecipe(ranked.getFirst());
         return result;
     }

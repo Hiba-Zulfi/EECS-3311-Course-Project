@@ -49,4 +49,5 @@ public final class AgentController {
 
     public Optional<Recipe> findRecipe(int recipeId) { return recipeRepository.findById(recipeId); }
     public List<Recipe> getRecipes() { return recipeRepository.getAllRecipes(); }
+    public List<Recipe> getLastSearchResults() { return agent.getLastSearchResults(); }
 }

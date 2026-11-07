@@ -28,8 +28,7 @@ public class TimeRecommendationTool implements AgentTool {
         if (minutes <= 0) throw new IllegalArgumentException("The request must include a positive available time in minutes.");
         List<Recipe> sourceRecipes = recipesFromSearchOutput(input);
         List<Recipe> recommendations = recommendRecipes(sourceRecipes, minutes);
-        return lastExplanation + "\n" + String.join("\n", recommendations.stream()
-                .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
+        return formatRecommendations(recommendations);
     }
 
     public List<Recipe> filterByTime(List<Recipe> recipes, int availableTime) {
@@ -70,6 +69,19 @@ public class TimeRecommendationTool implements AgentTool {
 
     public String getLastExplanation() { return lastExplanation; }
     public List<Recipe> getLastRecommendations() { return List.copyOf(lastRecommendations); }
+
+    public String formatRecommendations(List<Recipe> recipes) {
+        int shown = Math.min(5, recipes.size());
+        StringBuilder result = new StringBuilder(lastExplanation);
+        for (int i = 0; i < shown; i++) {
+            Recipe recipe = recipes.get(i);
+            result.append(i == 0 ? "\n" : "\n").append('[').append(recipe.getRecipeID()).append("] ")
+                    .append(recipe.getName()).append(" (").append(recipe.getTotalTime()).append(" minutes)");
+        }
+        int remaining = recipes.size() - shown;
+        if (remaining > 0) result.append("\n(").append(remaining).append(" more matches not shown)");
+        return result.toString();
+    }
 
     @Override
     public String getName() { return "TimeRecommendationTool"; }

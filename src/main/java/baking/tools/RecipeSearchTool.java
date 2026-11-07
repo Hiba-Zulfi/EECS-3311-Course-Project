@@ -38,10 +38,7 @@ public class RecipeSearchTool implements AgentTool {
     @Override
     public String execute(String input) {
         List<Recipe> matches = search(input, List.of(), 0);
-        if (matches.isEmpty()) return "No recipes matched the requested keywords and hard filters.";
-        String heading = closeMatch ? "No exact keyword match; here is a close category match:\n" : "Matching recipes:\n";
-        return heading + String.join("\n", matches.stream()
-                .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
+        return formatResults(matches);
     }
 
     public List<Recipe> searchRecipes(String input) {
@@ -58,10 +55,7 @@ public class RecipeSearchTool implements AgentTool {
 
     public String execute(String input, List<String> dietaryRestrictions, int availableTime) {
         List<Recipe> matches = searchRecipes(input, dietaryRestrictions, availableTime);
-        if (matches.isEmpty()) return "No recipes matched the requested keywords and hard filters.";
-        String heading = closeMatch ? "No exact keyword match; here is a close category match:\n" : "Matching recipes:\n";
-        return heading + String.join("\n", matches.stream()
-                .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
+        return formatResults(matches);
     }
 
     private List<Recipe> search(String input, List<String> dietaryRestrictions, int availableTime) {
@@ -101,9 +95,18 @@ public class RecipeSearchTool implements AgentTool {
 
     public String formatResults(List<Recipe> recipes) {
         if (recipes.isEmpty()) return "No recipes matched the requested keywords and hard filters.";
-        return (closeMatch ? "No exact keyword match; here is a close category match:\n" : "Matching recipes:\n")
-                + String.join("\n", recipes.stream()
-                .map(recipe -> "- " + recipe.getName() + " (" + recipe.getTotalTime() + " minutes)").toList());
+        int shown = Math.min(5, recipes.size());
+        StringBuilder result = new StringBuilder(closeMatch
+                ? "No exact keyword match; here is a close category match:\n" : "Matching recipes:\n");
+        for (int i = 0; i < shown; i++) {
+            Recipe recipe = recipes.get(i);
+            result.append('[').append(recipe.getRecipeID()).append("] ").append(recipe.getName())
+                    .append(" (").append(recipe.getTotalTime()).append(" minutes)");
+            if (i + 1 < shown) result.append('\n');
+        }
+        int remaining = recipes.size() - shown;
+        if (remaining > 0) result.append("\n(").append(remaining).append(" more matches not shown)");
+        return result.toString();
     }
 
     @Override

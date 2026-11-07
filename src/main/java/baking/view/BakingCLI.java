@@ -22,6 +22,7 @@ public final class BakingCLI {
     private boolean awaitingClarification;
     private boolean running = true;
     private Recipe selectedRecipe;
+    private List<Recipe> lastResults = List.of();
     private List<Ingredient> availableIngredients = List.of();
 
     public BakingCLI(AgentController controller) {
@@ -58,6 +59,11 @@ public final class BakingCLI {
             handleCommand(text.startsWith("/") ? text : "/quit");
             return;
         }
+        if (isSelectionInput(text)) {
+            try { selectCommand(text); }
+            catch (IllegalArgumentException e) { displayError(e.getMessage()); }
+            return;
+        }
         if (awaitingClarification) {
             awaitingClarification = false;
             submitAgentRequest(text);
@@ -70,6 +76,7 @@ public final class BakingCLI {
         try {
             String response = controller.processRequest(new BakingRequest(text, 0, 0,
                     List.of(), List.of(), ""));
+            lastResults = controller.getLastSearchResults();
             displayResult(response);
             awaitingClarification = response != null && response.toLowerCase().contains("would you like");
         } catch (RuntimeException e) {
@@ -114,11 +121,41 @@ public final class BakingCLI {
     }
 
     private void selectCommand(String argument) {
-        int id = positiveInteger(argument, "recipe id");
-        Optional<Recipe> recipe = controller.findRecipe(id);
-        if (recipe.isEmpty()) throw new IllegalArgumentException("No recipe exists with id " + id + ".");
-        selectedRecipe = recipe.get();
-        displayResult("Selected: " + selectedRecipe.getName() + " (" + selectedRecipe.getServings() + " servings)");
+        selectedRecipe = resolveSelection(argument).orElseThrow(() ->
+                new IllegalArgumentException("No matching recipe in the last results. Search first, then select by id, name, or position."));
+        displayResult("Selected: [" + selectedRecipe.getRecipeID() + "] " + selectedRecipe.getName() + " — "
+                + selectedRecipe.getDescription() + " (" + selectedRecipe.getTotalTime() + " minutes; serves "
+                + selectedRecipe.getServings() + ")");
+    }
+
+    private Optional<Recipe> resolveSelection(String value) {
+        String normalized = value.trim().toLowerCase(java.util.Locale.ROOT)
+                .replaceFirst("^select\\s+", "").replaceFirst("^the\\s+", "")
+                .replaceFirst("\\s+option$", "");
+        int position = switch (normalized) {
+            case "first", "1st" -> 1;
+            case "second", "2nd" -> 2;
+            case "third", "3rd" -> 3;
+            default -> 0;
+        };
+        if (position > 0) return position <= lastResults.size()
+                ? Optional.of(lastResults.get(position - 1)) : Optional.empty();
+        try {
+            int id = Integer.parseInt(normalized);
+            Optional<Recipe> inResults = lastResults.stream().filter(r -> r.getRecipeID() == id).findFirst();
+            return inResults.isPresent() ? inResults : controller.findRecipe(id);
+        } catch (NumberFormatException ignored) { }
+        List<Recipe> candidates = lastResults.isEmpty() ? controller.getRecipes() : lastResults;
+        Optional<Recipe> exact = candidates.stream().filter(r -> r.getName().equalsIgnoreCase(normalized)).findFirst();
+        return exact.isPresent() ? exact : candidates.stream()
+                .filter(r -> r.getName().toLowerCase(java.util.Locale.ROOT).contains(normalized))
+                .findFirst();
+    }
+
+    private static boolean isSelectionInput(String text) {
+        String normalized = text.trim().toLowerCase(java.util.Locale.ROOT);
+        return normalized.matches("\\d+") || normalized.matches("(?:select\\s+)?(?:the\\s+)?(?:first|second|third|1st|2nd|3rd)(?:\\s+option)?")
+                || normalized.startsWith("select ");
     }
 
     private void checkCommand(String argument) {
@@ -155,9 +192,20 @@ public final class BakingCLI {
 
     private void favouritesCommand() {
         List<Recipe> favourites = controller.getFavourites();
-        displayResult(favourites.isEmpty() ? "You have no favourite recipes."
-                : "Favourites: " + favourites.stream().map(r -> r.getRecipeID() + ": " + r.getName())
-                        .reduce((a, b) -> a + ", " + b).orElse(""));
+        if (favourites.isEmpty()) {
+            displayResult("You have no favourite recipes.");
+            return;
+        }
+        StringBuilder result = new StringBuilder("Favourites:\n");
+        int shown = Math.min(5, favourites.size());
+        for (int i = 0; i < shown; i++) {
+            Recipe recipe = favourites.get(i);
+            result.append('[').append(recipe.getRecipeID()).append("] ").append(recipe.getName());
+            if (i + 1 < shown) result.append('\n');
+        }
+        if (favourites.size() > shown) result.append("\n(").append(favourites.size() - shown)
+                .append(" more matches not shown)");
+        displayResult(result.toString());
     }
 
     private Recipe requireSelectedRecipe() {
