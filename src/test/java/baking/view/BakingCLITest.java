@@ -104,6 +104,28 @@ class BakingCLITest {
     }
 
     @Test
+    void helpDuringClarificationIsCommandAndKeepsTheQuestionPending() {
+        MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"unclear\"}");
+        IngredientManager ingredients = new IngredientManager();
+        AgentController controller = new AgentController(
+                new BakingAgent(new LLMClient(provider), new ToolManager(List.of()), new AgentMemory()),
+                ingredients, new RecipeRepository(), new FavouritesManager(temp.resolve("faves-help.json")),
+                new ShoppingListGenerator(ingredients));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BakingCLI cli = new BakingCLI(controller, new ByteArrayInputStream(new byte[0]),
+                new PrintStream(output), System.err);
+
+        cli.submitCommand("hello");
+        cli.submitCommand("/help");
+        cli.submitCommand("recipe");
+
+        assertTrue(output.toString().contains("Commands:"));
+        assertEquals(2, provider.getPrompts().size());
+        assertTrue(provider.getPrompts().get(1).contains("hello"));
+        assertTrue(provider.getPrompts().get(1).contains("Clarification answer: recipe"));
+    }
+
+    @Test
     void cancelDuringClarificationClearsPendingRequestAndRestoresNormalInput() {
         MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"unclear\"}");
         IngredientManager ingredients = new IngredientManager();

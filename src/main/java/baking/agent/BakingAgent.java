@@ -171,8 +171,10 @@ public class BakingAgent {
     private String runBakingRequestChain(BakingRequest original, AgentMemory staged) {
         BakingRequest effectiveRequest = applyPreferences(original, original);
         staged.setLastBakingRequest(effectiveRequest);
+        String availableTime = effectiveRequest.getAvailableTime() > 0
+                ? effectiveRequest.getAvailableTime() + " minutes" : "not specified";
         String requestOutput = "Baking request parsed: " + effectiveRequest.getDesiredServings() + " servings, "
-                + effectiveRequest.getAvailableTime() + " minutes available, dietary restrictions: "
+                + "time available: " + availableTime + ", dietary restrictions: "
                 + (effectiveRequest.getDietaryRestrictions().isEmpty() ? "none"
                 : String.join(", ", effectiveRequest.getDietaryRestrictions())) + ", taste preference: "
                 + (effectiveRequest.getTastePreference().isBlank() ? "none" : effectiveRequest.getTastePreference());

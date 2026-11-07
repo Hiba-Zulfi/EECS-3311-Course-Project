@@ -123,7 +123,7 @@ public final class BakingCLI {
     private void selectCommand(String argument) {
         selectedRecipe = resolveSelection(argument).orElseThrow(() ->
                 new IllegalArgumentException("No matching recipe in the last results. Search first, then select by id, name, or position."));
-        displayResult("Selected: [" + selectedRecipe.getRecipeID() + "] " + selectedRecipe.getName() + " — "
+        displayResult("Selected: [" + selectedRecipe.getRecipeID() + "] " + selectedRecipe.getName() + " - "
                 + selectedRecipe.getDescription() + " (" + selectedRecipe.getTotalTime() + " minutes; serves "
                 + selectedRecipe.getServings() + ")");
     }

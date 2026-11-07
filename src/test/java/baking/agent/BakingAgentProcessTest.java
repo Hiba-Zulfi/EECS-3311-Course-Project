@@ -46,6 +46,18 @@ class BakingAgentProcessTest {
     }
 
     @Test
+    void bakingRequestWithoutTimeSaysNotSpecified() {
+        MockLLMProvider provider = new MockLLMProvider("{\"intent\":\"baking request\",\"servings\":4}");
+        BakingAgent agent = agent(provider, new AgentMemory(), new UserPreferences());
+
+        String result = agent.processRequest(request("I want a vanilla cake"));
+
+        assertTrue(result.contains("time available: not specified"));
+        assertFalse(result.contains("0 minutes available"));
+        assertEquals(1, provider.getPrompts().size());
+    }
+
+    @Test
     void timeRequestPassesSearchOutputIntoRecommendationTool() {
         RecipeRepository repository = new RecipeRepository();
         String rankedCandidates = "[\"Classic Chocolate Chip Cookies\",\"Vegan Chocolate Chip Muffins\"]";
