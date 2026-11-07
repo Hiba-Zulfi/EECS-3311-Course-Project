@@ -105,10 +105,139 @@ public final class BakingGUI {
         ingredients.add(new JLabel("Available Ingredients (Name:quantity unit, ...):"), BorderLayout.WEST);
         ingredients.add(ingredientsField, BorderLayout.CENTER);
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        // Feature controls are installed in the subsequent GUI feature layers.
+        JButton check = new JButton("Check Availability");
+        check.addActionListener(event -> runAction(this::checkAvailability));
+        servingsField.setColumns(6);
+        servingsField.setToolTipText("Servings");
+        JButton scale = new JButton("Scale");
+        scale.addActionListener(event -> runAction(this::scaleRecipe));
+        JButton shopping = new JButton("Generate Shopping List");
+        shopping.addActionListener(event -> runAction(this::generateShoppingList));
+        JButton favourite = new JButton("Favourite");
+        favourite.addActionListener(event -> runAction(this::favouriteRecipe));
+        JButton favourites = new JButton("View Favourites");
+        favourites.addActionListener(event -> runAction(this::viewFavourites));
+        JButton addIngredients = new JButton("Add / Update Ingredients");
+        addIngredients.addActionListener(event -> runAction(this::updateIngredients));
+        actions.add(addIngredients);
+        actions.add(check);
+        actions.add(new JLabel("Servings:"));
+        actions.add(servingsField);
+        actions.add(scale);
+        actions.add(shopping);
+        actions.add(favourite);
+        actions.add(favourites);
         controls.add(ingredients);
         controls.add(actions);
         return controls;
+    }
+
+    private void updateIngredients() {
+        List<Ingredient> additions = parseIngredientInput(ingredientsField.getText());
+        if (additions.isEmpty()) throw new IllegalArgumentException("Enter ingredients in Name:quantity unit format.");
+        List<Ingredient> merged = controller.mergeIngredients(availableIngredients, additions);
+        availableIngredients.clear();
+        availableIngredients.addAll(merged);
+        resultsArea.setText("Available ingredients: " + formatIngredients(availableIngredients));
+    }
+
+    private void checkAvailability() {
+        Recipe recipe = requireSelectedRecipe();
+        List<Ingredient> missing = controller.checkIngredients(recipe, availableIngredients);
+        resultsArea.setText(missing.isEmpty() ? "You have all ingredients for " + recipe.getName() + "."
+                : "Missing: " + formatIngredients(missing));
+    }
+
+    private void scaleRecipe() {
+        int servings = positiveInteger(servingsField.getText(), "serving count");
+        selectedRecipe = controller.scaleRecipe(requireSelectedRecipe(), servings);
+        resultsArea.setText("Scaled " + selectedRecipe.getName() + " to " + servings + " servings: "
+                + formatIngredients(selectedRecipe.getIngredients()));
+    }
+
+    private void generateShoppingList() {
+        ShoppingList list = controller.generateShoppingList(requireSelectedRecipe(), availableIngredients);
+        resultsArea.setText(list.getItems().isEmpty() ? "Your shopping list is empty."
+                : "Shopping list: " + formatIngredients(list.getItems()));
+    }
+
+    private void favouriteRecipe() {
+        Recipe recipe = requireSelectedRecipe();
+        resultsArea.setText(controller.addFavourite(recipe) ? "Added " + recipe.getName() + " to favourites."
+                : recipe.getName() + " is already in your favourites.");
+    }
+
+    private void viewFavourites() {
+        List<Recipe> favourites = controller.getFavourites();
+        resultsArea.setText(favourites.isEmpty() ? "You have no favourite recipes."
+                : favourites.stream().map(recipe -> "[" + recipe.getRecipeID() + "] " + recipe.getName())
+                        .reduce((a, b) -> a + "\n" + b).orElse(""));
+    }
+
+    private void runAction(Runnable action) {
+        try { action.run(); }
+        catch (RuntimeException error) { showError(Objects.toString(error.getMessage(), "Invalid input.")); }
+    }
+
+    private Recipe requireSelectedRecipe() {
+        if (selectedRecipe == null) throw new IllegalArgumentException("Select a recipe from the list first.");
+        return selectedRecipe;
+    }
+
+    private static int positiveInteger(String text, String label) {
+        try {
+            int value = Integer.parseInt(text.trim());
+            if (value > 0) return value;
+        } catch (NumberFormatException ignored) { }
+        throw new IllegalArgumentException("Enter a positive whole number for the " + label + ".");
+    }
+
+    static List<Ingredient> parseIngredientInput(String text) {
+        if (text == null || text.isBlank()) return List.of();
+        List<Ingredient> ingredients = new ArrayList<>();
+        for (String item : text.split(",")) {
+            String[] named = item.trim().split(":", 2);
+            if (named.length != 2 || named[0].isBlank()) {
+                throw new IllegalArgumentException("Use Name:quantity unit format, for example Flour:2 cups.");
+            }
+            String[] amount = named[1].trim().split("\\s+", 2);
+            try {
+                double quantity = Double.parseDouble(amount[0]);
+                if (!Double.isFinite(quantity) || quantity < 0) throw new NumberFormatException();
+                String unit = amount.length == 1 ? "count" : normalizeUnit(amount[1]);
+                ingredients.add(new Ingredient(named[0].trim(), quantity, unit));
+            } catch (NumberFormatException error) {
+                throw new IllegalArgumentException("Ingredient quantities must be non-negative numbers.");
+            }
+        }
+        return List.copyOf(ingredients);
+    }
+
+    private static String normalizeUnit(String raw) {
+        String normalized = switch (raw.trim().toLowerCase(java.util.Locale.ROOT)) {
+            case "cups" -> "cup";
+            case "tablespoon", "tablespoons" -> "tbsp";
+            case "teaspoon", "teaspoons" -> "tsp";
+            case "grams" -> "g";
+            case "kilogram", "kilograms" -> "kg";
+            case "ounce", "ounces" -> "oz";
+            case "pound", "pounds" -> "lb";
+            case "milliliter", "milliliters" -> "ml";
+            case "liter", "liters" -> "l";
+            case "pinches" -> "pinch";
+            default -> raw.trim().toLowerCase(java.util.Locale.ROOT);
+        };
+        if (!List.of("cup", "tbsp", "tsp", "g", "kg", "oz", "lb", "ml", "l", "pinch").contains(normalized)) {
+            throw new IllegalArgumentException("Unknown unit '" + raw + "'. Valid units: cup, tbsp, tsp, g, kg, oz, lb, ml, l, pinch.");
+        }
+        return normalized;
+    }
+
+    private static String formatIngredients(List<Ingredient> ingredients) {
+        return ingredients.stream().map(ingredient -> ingredient.getName() + " "
+                + BigDecimal.valueOf(ingredient.getQuantity()).stripTrailingZeros().toPlainString()
+                + (ingredient.getUnit().equalsIgnoreCase("count") ? "" : " " + ingredient.getUnit()))
+                .reduce((left, right) -> left + "; " + right).orElse("");
     }
 
     public void start() {
