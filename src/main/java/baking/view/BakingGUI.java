@@ -95,6 +95,7 @@ public final class BakingGUI {
 
         tabs.addTab("Find Recipes", buildFindRecipesTab());
         tabs.addTab("Recipe Tools", buildRecipeToolsTab());
+        tabs.addTab("Inventory", buildInventoryTab());
         tabs.addTab("Favourites", buildFavouritesTab());
         tabs.addTab("AI Help", buildAIHelpTab());
         root.add(tabs, BorderLayout.CENTER);
@@ -115,7 +116,7 @@ public final class BakingGUI {
         setAIHelpEnabled(false);
         BakingTheme.apply(frame, frame.getContentPane(), currentRecipeBanner, tabs);
         tabs.addChangeListener(event -> {
-            if (tabs.getSelectedIndex() == 2) refreshFavourites();
+            if (tabs.getSelectedIndex() == 3) refreshFavourites();
         });
     }
 
@@ -153,20 +154,38 @@ public final class BakingGUI {
         recipeToolsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         recipeToolsPanel.add(instruction("Choose a recipe in Find Recipes, then use these tools."), BorderLayout.NORTH);
 
-        JPanel groups = new JPanel(new GridLayout(2, 2, 8, 8));
-        groups.add(buildScaleGroup());
-        groups.add(buildIngredientsGroup());
-        groups.add(buildShoppingGroup());
-        groups.add(buildSaveFavouriteGroup());
+        JPanel toolRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        toolRow.add(buildScaleGroup());
+        checkButton.setText("Check what's missing");
+        checkButton.addActionListener(event -> checkMissingIngredients());
+        toolRow.add(checkButton);
         recipeToolsResults.setRows(7);
         JScrollPane output = new JScrollPane(recipeToolsResults);
         output.setBorder(BorderFactory.createTitledBorder("Results"));
 
+        JPanel actions = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        shoppingButton.addActionListener(event -> makeShoppingList());
+        saveFavouriteButton.addActionListener(event -> saveFavourite());
+        actions.add(shoppingButton);
+        actions.add(saveFavouriteButton);
+
         JPanel center = new JPanel(new BorderLayout(8, 8));
-        center.add(groups, BorderLayout.NORTH);
+        center.add(toolRow, BorderLayout.NORTH);
         center.add(output, BorderLayout.CENTER);
+        center.add(actions, BorderLayout.SOUTH);
         recipeToolsPanel.add(center, BorderLayout.CENTER);
         return recipeToolsPanel;
+    }
+
+    private JPanel buildInventoryTab() {
+        JPanel panel = tabPanel();
+        JPanel introduction = new JPanel(new BorderLayout(4, 4));
+        introduction.add(instruction("Ingredients you have"), BorderLayout.NORTH);
+        introduction.add(new JLabel("Add what is in your kitchen. Recipe Tools uses this list to check what is missing."),
+                BorderLayout.CENTER);
+        panel.add(introduction, BorderLayout.NORTH);
+        panel.add(buildIngredientsGroup(), BorderLayout.CENTER);
+        return panel;
     }
 
     private JPanel buildFavouritesTab() {
@@ -270,9 +289,10 @@ public final class BakingGUI {
     }
 
     private JPanel buildIngredientsGroup() {
-        JPanel group = titledGroup("Ingredients you have");
+        JPanel group = new JPanel(new BorderLayout(7, 7));
+        group.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         group.setLayout(new BorderLayout(7, 7));
-        JPanel entry = new JPanel(new GridLayout(1, 7, 6, 4));
+        JPanel entry = new JPanel(new GridLayout(1, 6, 6, 4));
         entry.add(new JLabel("Ingredient"));
         installPlaceholder(ingredientNameField, "e.g. flour");
         entry.add(ingredientNameField);
@@ -308,23 +328,6 @@ public final class BakingGUI {
         group.add(center, BorderLayout.CENTER);
         ingredientsError.setForeground(new java.awt.Color(170, 35, 35));
         group.add(ingredientsError, BorderLayout.SOUTH);
-        checkButton.setText("Check what's missing");
-        checkButton.addActionListener(event -> checkMissingIngredients());
-        group.add(checkButton, BorderLayout.NORTH);
-        return group;
-    }
-
-    private JPanel buildShoppingGroup() {
-        JPanel group = titledGroup("Shopping list");
-        shoppingButton.addActionListener(event -> makeShoppingList());
-        group.add(shoppingButton, BorderLayout.CENTER);
-        return group;
-    }
-
-    private JPanel buildSaveFavouriteGroup() {
-        JPanel group = titledGroup("Favourites");
-        saveFavouriteButton.addActionListener(event -> saveFavourite());
-        group.add(saveFavouriteButton, BorderLayout.CENTER);
         return group;
     }
 
@@ -390,7 +393,8 @@ public final class BakingGUI {
         ingredientsError.setText(" ");
         List<Ingredient> missing = controller.checkIngredients(requireSelectedRecipe(), availableIngredients);
         showRecipeResult(availableIngredients.isEmpty()
-                ? "All ingredients are missing: " + formatIngredients(selectedRecipe.getIngredients())
+                ? "Your Inventory is empty. Add ingredients in the Inventory tab. All ingredients are missing: "
+                        + formatIngredients(selectedRecipe.getIngredients())
                 : missing.isEmpty() ? "You have all required ingredients."
                 : "Missing: " + formatIngredients(missing));
     }
@@ -553,7 +557,7 @@ public final class BakingGUI {
     private void setAIHelpEnabled(boolean enabled) {
         setEnabledRecursively(aiHelpPanel, enabled);
         aiResults.setEnabled(true);
-        if (tabs.getTabCount() > 3) tabs.setEnabledAt(3, enabled);
+        if (tabs.getTabCount() > 4) tabs.setEnabledAt(4, enabled);
     }
 
     private static void setEnabledRecursively(Component component, boolean enabled) {
