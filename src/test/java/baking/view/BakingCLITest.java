@@ -165,6 +165,24 @@ class BakingCLITest {
         assertEquals(1, provider.getPrompts().size());
     }
 
+    @Test
+    void favouriteDoesNotAddDuplicateAndReportsThatItIsAlreadySaved() {
+        MockLLMProvider provider = new MockLLMProvider("unused");
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        BakingCLI cli = createCli(provider, output, "duplicate-favourite.json");
+
+        cli.submitCommand("/select 1");
+        cli.submitCommand("/favourite");
+        cli.submitCommand("/favourite");
+
+        assertTrue(output.toString().contains("Classic Chocolate Chip Cookies is already in your favourites."));
+        assertEquals(1, cliControllerFavourites("duplicate-favourite.json").size());
+    }
+
+    private List<baking.model.Recipe> cliControllerFavourites(String file) {
+        return new FavouritesManager(temp.resolve(file)).getFavourites();
+    }
+
     private BakingCLI createCli(MockLLMProvider provider, ByteArrayOutputStream output, String favouritesFile) {
         IngredientManager ingredients = new IngredientManager();
         AgentController controller = new AgentController(

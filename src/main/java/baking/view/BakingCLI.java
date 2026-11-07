@@ -185,8 +185,8 @@ public final class BakingCLI {
             controller.removeFavourite(recipe);
             displayResult("Removed " + recipe.getName() + " from favourites (if it was saved).");
         } else if (argument.isEmpty()) {
-            controller.addFavourite(recipe);
-            displayResult("Added " + recipe.getName() + " to favourites.");
+            if (controller.addFavourite(recipe)) displayResult("Added " + recipe.getName() + " to favourites.");
+            else displayResult(recipe.getName() + " is already in your favourites.");
         } else throw new IllegalArgumentException("Usage: /favourite [remove]");
     }
 

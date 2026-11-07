@@ -40,7 +40,7 @@ public final class AgentController {
     public Recipe scaleRecipe(Recipe recipe, int servings) {
         return recipe.scaleRecipe(recipe, servings);
     }
-    public void addFavourite(Recipe recipe) { favouritesManager.addFavourite(recipe); }
+    public boolean addFavourite(Recipe recipe) { return favouritesManager.addFavourite(recipe); }
     public void removeFavourite(Recipe recipe) { favouritesManager.removeFavourite(recipe); }
     public List<Recipe> getFavourites() { return favouritesManager.getFavourites(); }
     public ShoppingList generateShoppingList(Recipe recipe, List<Ingredient> available) {
