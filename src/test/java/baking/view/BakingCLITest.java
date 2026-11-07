@@ -61,7 +61,7 @@ class BakingCLITest {
         cli.submitCommand("/ingredients flour:4 cups");
 
         String result = output.toString();
-        assertTrue(result.contains("flour 4 cups; butter 1 cup; egg 2"));
+        assertTrue(result.contains("- flour: 4 cups\n- butter: 1 cup\n- egg: 2"));
         assertFalse(result.contains("4.0"));
         assertFalse(result.contains("egg 2 count"));
         cli.submitCommand("/ingredients clear");

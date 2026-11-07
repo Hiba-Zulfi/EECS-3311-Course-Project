@@ -36,12 +36,12 @@ public final class QuantityFormatter {
     public static String formatIngredient(Ingredient ingredient) {
         String quantity = formatQuantity(ingredient.getQuantity());
         String unit = formatUnit(ingredient.getUnit(), ingredient.getQuantity());
-        return ingredient.getName() + " " + quantity + (unit.isEmpty() ? "" : " " + unit);
+        return ingredient.getName() + ": " + quantity + (unit.isEmpty() ? "" : " " + unit);
     }
 
     public static String formatIngredients(List<Ingredient> ingredients) {
         return ingredients.stream().map(QuantityFormatter::formatIngredient)
-                .reduce((left, right) -> left + "; " + right).orElse("");
+                .map(line -> "- " + line).reduce((left, right) -> left + "\n" + right).orElse("");
     }
 
     public static String formatUnit(String rawUnit, double quantity) {

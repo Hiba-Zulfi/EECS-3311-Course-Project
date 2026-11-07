@@ -31,6 +31,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -63,9 +64,14 @@ public final class BakingGUI {
     private final JTextField servingsField = new JTextField();
     private final JTextField ingredientNameField = new JTextField();
     private final JTextField ingredientAmountField = new JTextField();
+    private final JLabel ingredientNameLabel = new JLabel("Ingredient");
+    private final JLabel ingredientAmountLabel = new JLabel("Amount");
+    private final JLabel ingredientUnitLabel = new JLabel("Unit");
+    private final JButton addIngredientButton = new JButton("Add ingredient");
     private final JComboBox<String> ingredientUnit = new JComboBox<>(new String[]{
             "cup", "tbsp", "tsp", "g", "kg", "oz", "lb", "ml", "l", "pinch", "none (count)"});
     private final DefaultListModel<Ingredient> pantryModel = new DefaultListModel<>();
+    private final JPanel inventoryInputRow = new JPanel(new GridLayout(1, 6, 6, 4));
     private final JList<Ingredient> pantryList = ingredientList(pantryModel);
     private final JTextArea recipeToolsResults = resultArea();
     private final List<Ingredient> availableIngredients = new ArrayList<>();
@@ -131,6 +137,7 @@ public final class BakingGUI {
         setRecipeToolsEnabled(false);
         setAIHelpEnabled(false);
         BakingTheme.apply(frame, frame.getContentPane(), currentRecipeBanner, tabs);
+        applyDisplayFonts();
         sizeAIActionButtons();
         styleShoppingNotepad();
         tabs.setIconAt(3, GuiIcons.heart(15));
@@ -261,7 +268,7 @@ public final class BakingGUI {
         JPanel substituteRow = new JPanel(new BorderLayout(8, 0));
         substituteRow.add(new JLabel("Ingredient"), BorderLayout.WEST);
         substituteIngredient.setRenderer((list, value, index, selected, focus) -> {
-            JLabel label = new JLabel(value == null ? "" : formatIngredient((Ingredient) value));
+            JLabel label = new JLabel(value == null ? "" : "- " + formatIngredient((Ingredient) value));
             if (value instanceof Ingredient ingredient) label.setToolTipText(ingredient.getName());
             if (selected) {
                 label.setOpaque(true);
@@ -348,20 +355,18 @@ public final class BakingGUI {
         JPanel group = new JPanel(new BorderLayout(7, 7));
         group.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         group.setLayout(new BorderLayout(7, 7));
-        JPanel entry = new JPanel(new GridLayout(1, 6, 6, 4));
-        entry.add(new JLabel("Ingredient"));
+        inventoryInputRow.add(ingredientNameLabel);
         installPlaceholder(ingredientNameField, "e.g. flour");
-        entry.add(ingredientNameField);
-        entry.add(new JLabel("Amount"));
+        inventoryInputRow.add(ingredientNameField);
+        inventoryInputRow.add(ingredientAmountLabel);
         installPlaceholder(ingredientAmountField, "e.g. 2");
-        entry.add(ingredientAmountField);
-        entry.add(new JLabel("Unit"));
-        entry.add(ingredientUnit);
-        JButton addIngredient = new JButton("Add ingredient");
-        addIngredient.addActionListener(event -> addPantryIngredient());
+        inventoryInputRow.add(ingredientAmountField);
+        inventoryInputRow.add(ingredientUnitLabel);
+        inventoryInputRow.add(ingredientUnit);
+        addIngredientButton.addActionListener(event -> addPantryIngredient());
         JPanel entrySection = new JPanel(new BorderLayout(5, 5));
-        entrySection.add(entry, BorderLayout.CENTER);
-        entrySection.add(addIngredient, BorderLayout.EAST);
+        entrySection.add(inventoryInputRow, BorderLayout.CENTER);
+        entrySection.add(addIngredientButton, BorderLayout.EAST);
 
         JPanel listSection = new JPanel(new BorderLayout(5, 5));
         listSection.add(new JScrollPane(pantryList), BorderLayout.CENTER);
@@ -429,7 +434,8 @@ public final class BakingGUI {
         selectedRecipe = recipe;
         currentRecipeBanner.setText("Current recipe: " + selectedRecipe.getName());
         statusLine.setText("Now working on: " + selectedRecipe.getName());
-        recipeToolsResults.setText("For " + selectedRecipe.getName() + ":");
+        recipeToolsResults.setText("For " + selectedRecipe.getName() + ":\nIngredients:\n"
+                + formatIngredients(selectedRecipe.getIngredients()));
         setRecipeToolsEnabled(true);
         setAIHelpEnabled(true);
         substituteIngredient.removeAllItems();
@@ -442,17 +448,17 @@ public final class BakingGUI {
         try { servings = positiveInteger(servingsField.getText()); }
         catch (IllegalArgumentException error) { servingsError.setText(error.getMessage()); return; }
         selectedRecipe = controller.scaleRecipe(requireSelectedRecipe(), servings);
-        showRecipeResult("Scaled to " + servings + " servings: " + formatIngredients(selectedRecipe.getIngredients()));
+        showRecipeResult("Scaled to " + servings + " servings\n" + formatIngredients(selectedRecipe.getIngredients()));
     }
 
     private void checkMissingIngredients() {
         ingredientsError.setText(" ");
         List<Ingredient> missing = controller.checkIngredients(requireSelectedRecipe(), availableIngredients);
         showRecipeResult(availableIngredients.isEmpty()
-                ? "Your Inventory is empty. Add ingredients in the Inventory tab. All ingredients are missing: "
+                ? "Your Inventory is empty. Add ingredients in the Inventory tab. All ingredients are missing:\n"
                         + formatIngredients(selectedRecipe.getIngredients())
                 : missing.isEmpty() ? "You have all required ingredients."
-                : "Missing: " + formatIngredients(missing));
+                : "Missing ingredients:\n" + formatIngredients(missing));
     }
 
     private void addPantryIngredient() {
@@ -505,7 +511,7 @@ public final class BakingGUI {
         Recipe recipe = requireSelectedRecipe();
         ShoppingList list = controller.generateShoppingList(recipe, availableIngredients);
         showRecipeResult(list.getItems().isEmpty() ? "Nothing to buy - you have it all!"
-                : "Shopping list: " + formatIngredients(list.getItems()));
+                : "Shopping list:\n" + formatIngredients(list.getItems()));
         populateShoppingNotepad(recipe, list.getItems());
         shoppingNotepad.setVisible(true);
         recipeToolsWorkspace.revalidate();
@@ -705,6 +711,23 @@ public final class BakingGUI {
         if (tabs.getTabCount() > 4) tabs.setEnabledAt(4, enabled);
     }
 
+    private void applyDisplayFonts() {
+        Font inputFont = BakingTheme.bodyFont(16);
+        Font rowFont = BakingTheme.bodyFont(15);
+        recipeToolsResults.setFont(inputFont);
+        pantryList.setFont(inputFont);
+        pantryList.setFixedCellHeight((int) Math.round(pantryList.getFontMetrics(inputFont).getHeight() * 1.5));
+        favouritesList.setFont(inputFont);
+        favouritesList.setFixedCellHeight(pantryList.getFontMetrics(inputFont).getHeight() + 8);
+        ingredientNameField.setFont(inputFont);
+        ingredientAmountField.setFont(inputFont);
+        ingredientUnit.setFont(inputFont);
+        ingredientNameLabel.setFont(rowFont);
+        ingredientAmountLabel.setFont(rowFont);
+        ingredientUnitLabel.setFont(rowFont);
+        addIngredientButton.setFont(rowFont);
+    }
+
     private static void setEnabledRecursively(Component component, boolean enabled) {
         component.setEnabled(enabled);
         if (component instanceof java.awt.Container container) {
@@ -770,7 +793,7 @@ public final class BakingGUI {
             @Override public Component getListCellRendererComponent(JList<?> owner, Object value, int index,
                     boolean selected, boolean focus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(owner, value, index, selected, focus);
-                if (value instanceof Ingredient ingredient) label.setText(QuantityFormatter.formatIngredient(ingredient));
+                if (value instanceof Ingredient ingredient) label.setText("- " + QuantityFormatter.formatIngredient(ingredient));
                 return label;
             }
         });

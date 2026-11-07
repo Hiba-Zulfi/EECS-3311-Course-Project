@@ -31,12 +31,11 @@ class BakingGUITest {
         assertEquals("1 1/3", QuantityFormatter.formatQuantity(1.3125));
         assertEquals("2", QuantityFormatter.formatQuantity(2.0));
         assertEquals("1", QuantityFormatter.formatQuantity(1.0));
-        assertEquals("1/2 cup", QuantityFormatter.formatIngredient(new Ingredient("sugar", 0.5, "cups"))
-                .replace("sugar ", ""));
-        assertEquals("2 cups", QuantityFormatter.formatIngredient(new Ingredient("flour", 2, "cup"))
-                .replace("flour ", ""));
-        assertEquals("1 1/3 cups", QuantityFormatter.formatIngredient(new Ingredient("flour", 1.3125, "cup"))
-                .replace("flour ", ""));
+        assertEquals("sugar: 1/2 cup", QuantityFormatter.formatIngredient(new Ingredient("sugar", 0.5, "cups")));
+        assertEquals("flour: 2 cups", QuantityFormatter.formatIngredient(new Ingredient("flour", 2, "cup")));
+        assertEquals("flour: 1 1/3 cups", QuantityFormatter.formatIngredient(new Ingredient("flour", 1.3125, "cup")));
+        assertEquals("- flour: 2 cups\n- butter: 1 cup", QuantityFormatter.formatIngredients(List.of(
+                new Ingredient("flour", 2, "cup"), new Ingredient("butter", 1, "cup"))));
     }
 
     @Test

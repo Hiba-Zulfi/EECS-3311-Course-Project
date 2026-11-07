@@ -37,7 +37,7 @@ public final class BakingTheme {
 
     public static void apply(JFrame frame, Container root, JLabel banner, JTabbedPane tabs) {
         Color rose = TEXT;
-        Font body = new Font(availableFont(), Font.PLAIN, 14);
+        Font body = bodyFont(14);
         Font heading = body.deriveFont(Font.BOLD, 16f);
         UIManager.put("Panel.background", BACKGROUND);
         UIManager.put("Label.foreground", rose);
@@ -153,5 +153,9 @@ public final class BakingTheme {
         if (Arrays.stream(families).anyMatch(name -> name.equalsIgnoreCase("Verdana"))) return "Verdana";
         if (Arrays.stream(families).anyMatch(name -> name.equalsIgnoreCase("Trebuchet MS"))) return "Trebuchet MS";
         return Font.SANS_SERIF;
+    }
+
+    public static Font bodyFont(int size) {
+        return new Font(availableFont(), Font.PLAIN, size);
     }
 }
